@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher's Math Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            max-width: 660px;
+            margin: 0 auto;
+            padding: 0px;
+            position: relative;
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa;
+        }
+        
+        .question-card {
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 0px rgba(0,0,0,0.01);
+        }
+        
+        .add-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+            z-index: 1000;
+            background-color: var(--primary-color);
+            border: none;
+        }
+        
+        .submit-btn-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+            max-width: 660px;
+            margin: 0 auto;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        
+        .modal-content {
+            max-width: 500px;
+            margin: 0 auto;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .answer-input {
+            width: 100px !important;
+            display: inline-block !important;
+            border-radius: 6px !important;
+            border: 1px solid #dfe3e9 !important;
+        }
+        
+        .correct-answer {
+            color: var(--success-color);
+            font-weight: 600;
+            margin-left: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-group-submit {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-group-submit .btn {
+            flex: 1;
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 10px;
+        }
+        
+        #submitTestBtn {
+            background-color: var(--primary-color);
+            border: none;
+        }
+        
+        #submitTestBtn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        #clearTestBtn {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            border: 1px solid #dfe3e9;
+        }
+        
+        #clearTestBtn:hover {
+            background-color: #e9ecef;
+        }
+        
+        .btn-outline-primary {
+            border-radius: 6px !important;
+        }
+        
+        .card-header {
+            font-weight: 600;
+        }
+        
+        h1 {
+            color: var(--dark-color);
+            font-weight: 700;
+            margin: 1rem;
+        }
+        
+        .text-muted {
+            color: #6c757d !important;
+        }
+        
+    @media (max-width: 576px) {
+            
+            
+            .question-card .d-flex {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .question-card .me-3 {
+                margin-right: 0.5rem !important;
+            }
+            
+            .correct-answer {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-3">Math Test</h1>
+        
+        <div id="questionsContainer"></div>
+    </div>
+
+    <!-- Add Question Button -->
+    <button id="addQuestionBtn" class="btn btn-primary add-btn" data-bs-toggle="modal" data-bs-target="#questionModal" aria-label="Add new question">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Submit Button Container -->
+    <div class="submit-btn-container" id="submitContainer" style="display: none;">
+        <div class="btn-group-submit">
+            <button id="clearTestBtn" class="btn btn-light" aria-label="Clear test">Clear Test</button>
+            <button id="submitTestBtn" class="btn btn-primary" aria-label="Submit test">Submit Test</button>
+        </div>
+    </div>
+
+    <!-- Add Question Modal -->
+    <div class="modal fade" id="questionModal" tabindex="-1" aria-labelledby="questionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="questionModalLabel">Add Question</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="questionForm">
+                        <div class="mb-3">
+                            <label for="firstNumber" class="form-label">First Number</label>
+                            <input type="number" class="form-control" id="firstNumber" required min="1" aria-label="First number">
+                        </div>
+                        <div class="mb-3">
+                            <label for="secondNumber" class="form-label">Second Number</label>
+                            <input type="number" class="form-control" id="secondNumber" required min="1" aria-label="Second number">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Operation</label>
+                            <div class="btn-group w-100" role="group" aria-label="Math operations">
+                                <input type="radio" class="btn-check" name="operation" id="operationAdd" value="+" autocomplete="off" checked>
+                                <label class="btn btn-outline-primary" for="operationAdd" aria-label="Addition">+</label>
+
+                                <input type="radio" class="btn-check" name="operation" id="operationSubtract" value="-" autocomplete="off">
+                                <label class="btn btn-outline-dark" for="operationSubtract" aria-label="Subtraction">-</label>
+
+                                <input type="radio" class="btn-check" name="operation" id="operationMultiply" value="×" autocomplete="off">
+                                <label class="btn btn-outline-info" for="operationMultiply" aria-label="Multiplication">×</label>
+
+                                <input type="radio" class="btn-check" name="operation" id="operationDivide" value="÷" autocomplete="off">
+                                <label class="btn btn-outline-warning" for="operationDivide" aria-label="Division">÷</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Cancel">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="addQuestionModalBtn" aria-label="Add question">Add Question</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionsContainer = document.getElementById('questionsContainer');
+            const addQuestionBtn = document.getElementById('addQuestionBtn');
+            const addQuestionModalBtn = document.getElementById('addQuestionModalBtn');
+            const submitContainer = document.getElementById('submitContainer');
+            const submitTestBtn = document.getElementById('submitTestBtn');
+            const clearTestBtn = document.getElementById('clearTestBtn');
+            const questionForm = document.getElementById('questionForm');
+            const questionModal = new bootstrap.Modal(document.getElementById('questionModal'));
+            
+            let questions = [];
+            let questionId = 1;
+            
+            // Load questions from localStorage
+            function loadQuestions() {
+                const savedQuestions = localStorage.getItem('mathTestQuestions');
+                if (savedQuestions) {
+                    questions = JSON.parse(savedQuestions);
+                    questionId = questions.length > 0 ? Math.max(...questions.map(q => q.id)) + 1 : 1;
+                    
+                    if (questions.length > 0) {
+                        submitContainer.style.display = 'block';
+                        
+                        questions.forEach(q => {
+                            renderQuestion(q.id, q.questionText, q.correctAnswer, questions.indexOf(q) + 1);
+                        });
+                    }
+                }
+            }
+            
+            // Save questions to localStorage
+            function saveQuestions() {
+                localStorage.setItem('mathTestQuestions', JSON.stringify(questions));
+            }
+            
+            // Add question from modal
+            addQuestionModalBtn.addEventListener('click', function() {
+                const firstNum = parseInt(document.getElementById('firstNumber').value);
+                const secondNum = parseInt(document.getElementById('secondNumber').value);
+                const operation = document.querySelector('input[name="operation"]:checked').value;
+                
+                if (isNaN(firstNum) || isNaN(secondNum)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Input',
+                        text: 'Please enter valid numbers',
+                        confirmButtonColor: 'var(--primary-color)'
+                    });
+                    return;
+                }
+                
+                if (questions.length >= 10) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Maximum Reached',
+                        text: 'You can only add up to 10 questions',
+                        confirmButtonColor: 'var(--primary-color)'
+                    });
+                    return;
+                }
+                
+                let questionText, correctAnswer;
+                
+                switch(operation) {
+                    case '+':
+                        questionText = `${firstNum} + ${secondNum} = `;
+                        correctAnswer = firstNum + secondNum;
+                        break;
+                    case '-':
+                        questionText = `${firstNum} - ${secondNum} = `;
+                        correctAnswer = firstNum - secondNum;
+                        break;
+                    case '×':
+                        questionText = `${firstNum} × ${secondNum} = `;
+                        correctAnswer = firstNum * secondNum;
+                        break;
+                    case '÷':
+                        if (secondNum === 0) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Invalid Operation',
+                                text: 'Cannot divide by zero!',
+                                confirmButtonColor: 'var(--primary-color)'
+                            });
+                            return;
+                        }
+                        questionText = `${firstNum} ÷ ${secondNum} = `;
+                        correctAnswer = firstNum / secondNum;
+                        // Round to 2 decimal places for division
+                        correctAnswer = Math.round(correctAnswer * 100) / 100;
+                        break;
+                }
+                
+                addQuestion(questionId, questionText, correctAnswer);
+                questionId++;
+                
+                // Reset form
+                questionForm.reset();
+                document.getElementById('operationAdd').checked = true;
+                
+                // Close modal
+                questionModal.hide();
+            });
+            
+            // Add question to DOM and save
+            function addQuestion(id, questionText, correctAnswer) {
+                if (questions.length === 0) {
+                    submitContainer.style.display = 'block';
+                }
+                
+                const question = { id, questionText, correctAnswer };
+                questions.push(question);
+                saveQuestions();
+                renderQuestion(id, questionText, correctAnswer, questions.length);
+            }
+            
+            // Render question in DOM
+            function renderQuestion(id, questionText, correctAnswer, questionNumber) {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'card question-card';
+                questionDiv.dataset.id = id;
+                questionDiv.dataset.correctAnswer = correctAnswer;
+                questionDiv.innerHTML = `
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <span class="me-3 fw-semibold">${questionNumber}.</span>
+                            <span class="me-2">${questionText}</span>
+                            <input type="number" class="form-control answer-input" required step="any" aria-label="Answer for question ${questionNumber}">
+                            <span class="correct-answer" style="display: none;">Correct: ${correctAnswer}</span>
+                        </div>
+                    </div>
+                `;
+                
+                questionsContainer.appendChild(questionDiv);
+                questionDiv.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Clear all questions
+            clearTestBtn.addEventListener('click', function() {
+                Swal.fire({
+                    title: 'Clear Test?',
+                    text: "This will remove all questions and cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'var(--danger-color)',
+                    cancelButtonColor: 'var(--secondary-color)',
+                    confirmButtonText: 'Yes, clear it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        questions = [];
+                        questionId = 1;
+                        questionsContainer.innerHTML = '';
+                        submitContainer.style.display = 'none';
+                        localStorage.removeItem('mathTestQuestions');
+                        
+                        Swal.fire({
+                            title: 'Cleared!',
+                            text: 'Your test has been cleared.',
+                            icon: 'success',
+                            confirmButtonColor: 'var(--primary-color)'
+                        });
+                    }
+                });
+            });
+            
+            // Submit test
+            submitTestBtn.addEventListener('click', function() {
+                // Validate all answers are filled
+                const inputs = document.querySelectorAll('.answer-input');
+                let allFilled = true;
+                
+                inputs.forEach(input => {
+                    if (input.value === '') {
+                        input.classList.add('is-invalid');
+                        allFilled = false;
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+                
+                if (!allFilled) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Incomplete Test',
+                        text: 'Please answer all questions before submitting!',
+                        confirmButtonColor: 'var(--primary-color)'
+                    });
+                    return;
+                }
+                
+                // Calculate results
+                let correct = 0;
+                const results = [];
+                
+                inputs.forEach(input => {
+                    const questionDiv = input.closest('.question-card');
+                    const correctAnswer = parseFloat(questionDiv.dataset.correctAnswer);
+                    const userAnswer = parseFloat(input.value);
+                    const isCorrect = userAnswer === correctAnswer;
+                    
+                    if (isCorrect) {
+                        correct++;
+                        input.classList.add('is-valid');
+                        input.classList.remove('is-invalid');
+                    } else {
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+                        questionDiv.querySelector('.correct-answer').style.display = 'inline';
+                    }
+                });
+                
+                // Show results
+                const percentage = Math.round((correct / questions.length) * 100);
+                let resultIcon = 'error';
+                if (percentage >= 80) resultIcon = 'success';
+                else if (percentage >= 50) resultIcon = 'warning';
+                
+                Swal.fire({
+                    title: 'Test Results',
+                    html: `
+                        <div class="text-${resultIcon === 'success' ? 'success' : resultIcon === 'warning' ? 'warning' : 'danger'} mb-3" 
+                             style="font-size: 4rem; line-height: 1;">
+                            <i class="fas fa-${resultIcon === 'success' ? 'trophy' : resultIcon === 'warning' ? 'medal' : 'times-circle'}"></i>
+                        </div>
+                        <h5>You got ${correct} out of ${questions.length} correct</h5>
+                        <div class="progress mt-3 mb-2" style="height: 10px;">
+                            <div class="progress-bar bg-${resultIcon === 'success' ? 'success' : resultIcon === 'warning' ? 'warning' : 'danger'}" 
+                                 role="progressbar" style="width: ${percentage}%" 
+                                 aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <p class="mb-0">${percentage}% correct</p>
+                        <p class="mt-3">${getResultMessage(percentage)}</p>
+                    `,
+                    confirmButtonColor: 'var(--primary-color)'
+                });
+            });
+            
+            // Helper function for result message
+            function getResultMessage(percentage) {
+                if (percentage >= 90) return "Excellent work! 🎉";
+                if (percentage >= 70) return "Good job! 👍";
+                if (percentage >= 50) return "Not bad, keep practicing! 💪";
+                return "Keep practicing, you'll get better! 📚";
+            }
+            
+            // Load questions when page loads
+            loadQuestions();
+        });
+    </script>
+</body>
+</html>

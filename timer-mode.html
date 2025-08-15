@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time Attack Math Game</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<!-- Vue.js CDN -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+<style>
+body {
+    background: #ffffff;
+}
+.game-box {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+   }
+.question {
+    font-size: 2rem;
+    font-weight: bold;
+}
+.answer-input {
+    font-size: 1rem;
+    text-align: center;
+}
+.modal-content {
+    text-align: center;
+    border-radius: 15px;
+}
+.timeup-img {
+    width: 96px;
+    height: 96px;
+    display: block;
+    margin: auto;
+    border: 2px solid red ;
+    padding:6px;
+    border-radius: 50%;
+}
+.countdown-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #0d6efd;
+    display:flex;
+    justify-content :center;
+    align-items:center;
+    flex-direction:column;
+    min-height:70vh;
+}
+ .time {
+    display:block;
+    margin:20px auto;
+    max-width: 85px;
+    background:#f8f9fa;
+    padding:20px 30px;
+    border-radius:50%;
+    border:2px solid red;
+}
+
+</style>
+</head>
+<body>
+
+<div id="app" class="container py-5">
+    <div class="game-box text-center">
+
+        <!-- Title -->
+        <h2 class="mb-3" v-if="!countdownActive && !gameStarted && !gameOver">
+            <img src="https://img.icons8.com/color/48/timer.png" alt="timer"> 
+            Time Attack Mode
+        </h2>
+
+        <!-- High Score Display -->
+        <div v-if="!countdownActive && !gameStarted" class="mb-2 fw-bold text-success">
+            <i class="bi bi-star-fill"></i> Last High Score: {{ highScore }}
+        </div>
+
+        <!-- Start Button -->
+        <div v-if="!gameStarted && !gameOver && !countdownActive">
+            <button @click="showCountdown" class="btn btn-primary btn-lg">
+                <i class="bi bi-play-fill"></i> Start Game
+            </button>
+        </div>
+
+        <!-- Countdown -->
+        <div v-if="countdownActive" class="countdown-number">
+            Game starts in <span class="time"> {{ countdownNumber }} </span>
+        </div>
+
+        <!-- Game Area -->
+        <div v-if="gameStarted">
+            <div class="d-flex justify-content-between mb-2">
+                <div class="fw-bold">
+                    <i class="bi bi-trophy-fill text-warning"></i> Score: {{ score }}
+                </div>
+                <div class="fw-bold text-danger">
+                    <i class="bi bi-stopwatch-fill"></i> {{ timeLeft }}s
+                </div>
+            </div>
+            <div class="text-success fw-bold mb-2">
+                Last High Score: {{ highScore }}
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress mb-3" style="height: 8px;">
+                <div class="progress-bar bg-danger" role="progressbar" 
+                     :style="{width: (timeLeft/60*100) + '%'}"></div>
+            </div>
+
+            <!-- Question -->
+            <div class="question my-3">What is {{ question }}?</div>
+
+            <input type="number" v-model.number="userAnswer" @keyup.enter="checkAnswer" 
+                   class="form-control answer-input mb-3" placeholder="Your answer">
+
+            <button @click="checkAnswer" class="btn btn-success btn-lg w-100">
+                Submit
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Time Up Modal -->
+<div class="modal fade" id="timeUpModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+      <img class="timeup-img" src="https://img.icons8.com/fluency/96/hourglass-sand-top.png" alt="Time Up">
+      <h3 class="mt-3">⏳ Time's Up!</h3>
+      <p class="fs-5">Your final score: <strong id="finalScoreText"></strong></p>
+      <div class="d-flex justify-content-center gap-2 mt-3">
+        <button class="btn btn-primary" id="playAgainBtn">
+          <i class="bi bi-arrow-repeat"></i> Play Again
+        </button>
+        <button class="btn btn-secondary" onclick="window.location.href='index.html'">
+          <i class="bi bi-house-fill"></i> Back to Home
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+    data() {
+        return {
+            timeLeft: 60,
+            score: 0,
+            highScore: 0,
+            question: "",
+            correctAnswer: 0,
+            userAnswer: null,
+            gameStarted: false,
+            gameOver: false,
+            timer: null,
+            countdownActive: false,
+            countdownNumber: 3,
+            modalInstance: null
+        }
+    },
+    mounted() {
+        // Load High Score from localStorage
+        let storedScore = localStorage.getItem("highScore");
+        this.highScore = storedScore ? parseInt(storedScore) : 0;
+
+        // Prepare modal instance
+        this.modalInstance = new bootstrap.Modal(document.getElementById('timeUpModal'));
+
+        // Play Again Button Event (Outside Vue scope)
+        document.getElementById('playAgainBtn').addEventListener('click', () => {
+            this.modalInstance.hide();
+            setTimeout(() => {
+                this.showCountdown();
+            }, 300);
+        });
+    },
+    methods: {
+        showCountdown() {
+            this.countdownActive = true;
+            this.countdownNumber = 3;
+            let countdownTimer = setInterval(() => {
+                if (this.countdownNumber > 1) {
+                    this.countdownNumber--;
+                } else {
+                    clearInterval(countdownTimer);
+                    this.countdownActive = false;
+                    this.startGame();
+                }
+            }, 1000);
+        },
+        startGame() {
+            this.score = 0;
+            this.timeLeft = 60;
+            this.gameStarted = true;
+            this.gameOver = false;
+            this.generateQuestion();
+            clearInterval(this.timer);
+            this.timer = setInterval(() => {
+                if (this.timeLeft > 0) {
+                    this.timeLeft--;
+                } else {
+                    this.endGame();
+                }
+            }, 1000);
+        },
+        generateQuestion() {
+            let num1 = Math.floor(Math.random() * 20) + 1;
+            let num2 = Math.floor(Math.random() * 20) + 1;
+            let operators = ['+', '-', '*', '/'];
+            let operator = operators[Math.floor(Math.random() * operators.length)];
+
+            if (operator === '/') {
+                num1 = num1 * num2;
+            }
+
+            this.correctAnswer = eval(`${num1} ${operator} ${num2}`);
+            if (operator === '/') this.correctAnswer = Math.floor(this.correctAnswer);
+
+            this.question = `${num1} ${operator} ${num2}`;
+            this.userAnswer = null;
+        },
+        checkAnswer() {
+            if (this.userAnswer === this.correctAnswer) {
+                this.score += 10;
+            }
+            this.generateQuestion();
+        },
+        endGame() {
+            clearInterval(this.timer);
+            this.gameOver = true;
+            this.gameStarted = false;
+
+            // Update high score
+            if (this.score > this.highScore) {
+                this.highScore = this.score;
+                localStorage.setItem("highScore", this.highScore);
+            }
+
+            document.getElementById('finalScoreText').innerText = this.score;
+            this.modalInstance.show();
+        }
+    }
+}).mount("#app");
+</script>
+
+</body>
+</html>

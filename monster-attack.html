@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Math Monster - Attack Mode</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --monster-red: #f44336;
+      --player-green: #4caf50;
+      --bg-light: #ffffff;
+      --text-dark: #333;
+    }
+
+    body { font-family: 'Poppins', sans-serif; background: var(--bg-light); color: var(--text-dark); }
+
+    header h2 { font-weight: 700; }
+
+    .monster-img, .player-img { width: 180px; margin: auto; display: block; }
+
+    .hp-bar { height: 20px; background:#ddd; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+    .hp-fill { height: 100%; transition: width 0.4s; }
+    .hp-fill.monster { background: var(--monster-red); }
+    .hp-fill.player { background: var(--player-green); }
+
+    .shake { animation: shake 0.4s; }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* Snackbar */
+    #snackbar {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 12px;
+      position: fixed;
+      z-index: 999;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.5s, bottom 0.5s;
+    }
+    #snackbar.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px;
+    }
+
+    /* Remove outline from input */
+    input:focus {
+      outline: none !important;
+      box-shadow: none !important;
+      border-color: #ccc !important;
+    }
+  </style>
+</head>
+<body>
+<main id="app" class="container py-4">
+  <header class="text-center mb-4">
+    <h2>⚔️ Attack Mode - Defeat the Math Monster!</h2>
+  </header>
+
+  <!-- Monster HP -->
+  <section class="text-center">
+    <div class="hp-bar"><div class="hp-fill monster" :style="{width: monsterHP + '%'}"></div></div>
+    <img :class="['monster-img', monsterShake ? 'shake':'']" src="assets/monster.png" alt="Monster"/>
+    <p><b>Monster HP: {{ monsterHP }}%</b></p>
+  </section>
+
+  <!-- Question -->
+  <section v-if="monsterHP > 0 && playerHP > 0" class="mt-4 text-center">
+    <h4>Solve: {{ question.a }} {{ question.op }} {{ question.b }} = ?</h4>
+    <input v-model.number="playerAnswer" @keyup.enter="checkAnswer" type="number" 
+           class="form-control w-50 mx-auto mt-2" placeholder="Enter answer"/>
+    <button @click="checkAnswer" class="btn btn-primary mt-2">Attack!</button>
+  </section>
+
+  <!-- Player HP -->
+  <section v-if="playerHP > 0" class="mt-3 text-center">
+    <img class="player-img" src="assets/hero.png" alt="Player"/>
+    <p><b>Your HP: {{ playerHP }}%</b></p>
+    <div class="hp-bar"><div class="hp-fill player" :style="{width: playerHP + '%'}"></div></div>
+  </section>
+
+  <!-- Snackbar -->
+  <div id="snackbar">{{ snackbarMsg }}</div>
+
+  <!-- Modal (Win/Lose) -->
+  <div class="modal fade" id="resultModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-4">
+        <div v-if="monsterHP <= 0">
+          <img src="https://img.icons8.com/emoji/96/party-popper.png"/>
+          <h3 class="mt-2">🎉 Congratulations!</h3>
+          <p>You defeated the Monster!</p>
+        </div>
+        <div v-if="playerHP <= 0">
+          <img src="https://img.icons8.com/emoji/96/crying-face.png"/>
+          <h3 class="mt-2">😢 Sorry!</h3>
+          <p>The Monster defeated you...</p>
+        </div>
+        <button class="btn btn-success mt-3" @click="resetGame">Play Again</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const { createApp, ref } = Vue;
+
+createApp({
+  setup() {
+    const monsterHP = ref(100);
+    const playerHP = ref(100);
+    const monsterShake = ref(false);
+    const playerAnswer = ref("");
+    const snackbarMsg = ref("");
+    const question = ref(generateQuestion());
+
+    function generateQuestion() {
+      const a = Math.floor(Math.random() * 10) + 1;
+      const b = Math.floor(Math.random() * 10) + 1;
+      const ops = ["+", "-", "*"];
+      const op = ops[Math.floor(Math.random() * ops.length)];
+      return { a, b, op };
+    }
+
+    function getAnswer(q) {
+      switch (q.op) {
+        case "+": return q.a + q.b;
+        case "-": return q.a - q.b;
+        case "*": return q.a * q.b;
+      }
+    }
+
+    function showSnackbar(msg) {
+      snackbarMsg.value = msg;
+      let x = document.getElementById("snackbar");
+      x.className = "show";
+      setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000);
+    }
+
+    function checkAnswer() {
+      if (playerAnswer.value === "") return;
+      const correct = getAnswer(question.value);
+      if (playerAnswer.value === correct) {
+        monsterHP.value = Math.max(0, monsterHP.value - 20);
+        showSnackbar("✅ Correct Hit!");
+        if (monsterHP.value <= 0) {
+          setTimeout(() => {
+            new bootstrap.Modal(document.getElementById('resultModal')).show();
+            confetti();
+          }, 400);
+        }
+      } else {
+        playerHP.value = Math.max(0, playerHP.value - 20);
+        showSnackbar("❌ Wrong Answer!");
+        monsterShake.value = true;
+        setTimeout(() => monsterShake.value = false, 400);
+        if (playerHP.value <= 0) {
+          setTimeout(() => {
+            new bootstrap.Modal(document.getElementById('resultModal')).show();
+          }, 400);
+        }
+      }
+      playerAnswer.value = "";
+      if (monsterHP.value > 0 && playerHP.value > 0) {
+        question.value = generateQuestion();
+      }
+    }
+
+    function resetGame() {
+      monsterHP.value = 100;
+      playerHP.value = 100;
+      playerAnswer.value = "";
+      question.value = generateQuestion();
+      bootstrap.Modal.getInstance(document.getElementById('resultModal')).hide();
+    }
+
+    return { monsterHP, playerHP, monsterShake, question, playerAnswer, snackbarMsg, checkAnswer, resetGame };
+  }
+}).mount("#app");
+</script>
+</body>
+</html>

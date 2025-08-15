@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facts Page</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Vue.js CDN -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+<style>
+:root {
+  --color-1: #FDE2E4;
+  --color-2: #FAD2E1;
+  --color-3: #E2ECE9;
+  --color-4: #CDEAC0;
+  --color-5: #FFF1E6;
+  --color-6: #E0BBE4;
+  --color-7: #D6EAF8;
+  --color-8: #F9E79F;
+  --color-9: #F5CBA7;
+  --color-10: #AED6F1;
+  --color-11: #D1F2EB;
+  --color-12: #F6DDCC;
+  --color-13: #F8C471;
+  --color-14: #BB8FCE;
+  --color-15: #F1948A;
+}
+* {
+     margin:0;
+     padding:0;
+     box-sizing:border-box;
+     user-select:none;
+  }
+body {
+  background: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
+   .wave-section {
+    position: relative;
+    background: linear-gradient(135deg, #6a5acd, #7b68ee); 
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px 30px;
+    
+  }
+  .wave-section h2 {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin: 0;
+  }
+  .wave-section img {
+    max-width: 70px;
+    border-radius: 50%;
+    margin-bottom:20px;
+    border: 3px solid white;
+    padding: 2px;
+  }
+  .wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+  }
+  .wave svg {
+    display: block;
+    width: 100%;
+    height: 80px;
+    rotate:180deg;
+  }
+
+.facts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 15px;
+}
+
+.fact-box {
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  min-height: 120px;
+  transition: transform 0.2s ease;
+  color: #333;
+}
+.skeleton {
+  background: linear-gradient(135deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.2s infinite;
+  height: 110px;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+</style>
+</head>
+<body>
+
+<div id="app" class="container p-0">
+
+  <div class="wave-section">
+  <h2>Explore Fun Facts</h2>
+  <img src="https://picsum.photos/200" alt="Fun Facts">
+  
+  <!-- Wave Bottom -->
+  <div class="wave">
+    <svg viewBox="0 0 500 80" preserveAspectRatio="none">
+      <path d="M0,10 C180,80 350,0 500,50 L500,0 L0,0 Z" 
+            style="stroke: none; fill: white;"></path>
+    </svg>
+  </div>
+</div>
+
+  <!-- Facts Grid -->
+  <div class="facts-grid mt-2 px-2 pb-3">
+    <!-- Skeleton Loading -->
+    <div v-if="loading" v-for="n in 20" :key="'skeleton-'+n" class="skeleton"></div>
+
+    <!-- Facts -->
+    <div v-else v-for="(fact, index) in facts" :key="index" class="fact-box" 
+         :style="{ backgroundColor: getColor(index) }">
+      {{ fact }}
+    </div>
+  </div>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      facts: [],
+      loading: true,
+      colors: [
+        "var(--color-1)", "var(--color-2)", "var(--color-3)", "var(--color-4)", "var(--color-5)",
+        "var(--color-6)", "var(--color-7)", "var(--color-8)", "var(--color-9)", "var(--color-10)",
+        "var(--color-11)", "var(--color-12)", "var(--color-13)", "var(--color-14)", "var(--color-15)"
+      ]
+    }
+  },
+  methods: {
+    getColor(index) {
+      return this.colors[index % this.colors.length];
+    }
+  },
+  mounted() {
+    // Simulate API delay
+    setTimeout(() => {
+      this.facts = [
+        "Bananas are berries, but strawberries aren't.",
+        "Octopuses have three hearts.",
+        "A group of flamingos is called a 'flamboyance'.",
+        "Honey never spoils.",
+        "Sharks existed before trees.",
+        "Sloths can hold their breath longer than dolphins.",
+        "The Eiffel Tower can grow up to 6 inches in summer.",
+        "Penguins propose to their mates with a pebble.",
+        "There are more stars in the universe than grains of sand on Earth.",
+        "Some cats are allergic to humans."
+      ];
+      this.loading = false;
+    }, 1500);
+  }
+}).mount('#app');
+</script>
+
+</body>
+</html>
