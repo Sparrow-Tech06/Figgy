@@ -146,7 +146,7 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      margin: 3px;
+      margin: 10px 3px;
       background-color: rgba(139, 119, 209, 0.8);
       z-index:999;
     }
@@ -280,6 +280,7 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
      }
+
 
 
 
