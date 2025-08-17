@@ -1,4 +1,18 @@
-
+:root {
+    --body-bg: #ffffff;
+    --primary-bg: #8B77D1 ;
+    --success: #24B66A ;
+    --warning: #FFCA2C ;
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+       --body-bg: #05061B;
+       --primary-bg: #313457 ;
+       --success: ;
+       --warning: ;
+    }
+ }
+/******************************************************/
     * { 
        margin: 0; 
        padding: 0; 
@@ -7,8 +21,12 @@
     }
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #fff;
+      background-color: var(--body-bg);
     }
+
+   .bg-success { background-color: var(--success); }
+   .bg-warning { background-color: var(--warning); }
+
 /***************************************************************/
     .navbar {
        background-color: #8B77D1 ;
