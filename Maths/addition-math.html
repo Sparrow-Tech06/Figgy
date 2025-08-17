@@ -56,12 +56,12 @@
     <!-- Buttons Row -->
     <div class="row g-2">
       <div class="col-8">
-        <button class="btn green w-100 fw-semibold" @click="checkAnswer">
+        <button class="btn btn-green w-100 fw-semibold" @click="checkAnswer">
           <i class="bi bi-check-circle me-1"></i> Submit
         </button>
       </div>
       <div class="col-4">
-        <button class="btn yellow w-100 fw-semibold" :disabled="hintCooldown > 0" @click="showHint">
+        <button class="btn btn-yellow w-100 fw-semibold" :disabled="hintCooldown > 0" @click="showHint">
           <i class="bi bi-lightbulb me-1"></i>
           {{ hintCooldown > 0 ? 'Hint (' + hintCooldown + 's)' : 'Hint' }}
         </button>
@@ -86,7 +86,7 @@
         </div>
         <h4 class="mt-2 fw-bold text-success"> Well Done! </h4>
         <p>You solved it correctly 🎉</p>
-        <button class="btn green w-100" @click="nextQuestion">
+        <button class="btn btn-green w-100" @click="nextQuestion">
           <i class="bi bi-arrow-right-circle me-1"></i> Next Question
         </button>
       </div>
@@ -230,6 +230,7 @@ createApp({
 </body>
 
 </html>
+
 
 
 
