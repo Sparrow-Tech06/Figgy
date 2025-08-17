@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <div class="modal fade" id="backConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content text-center p-3">
-          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="Exit" width="80" class="mx-auto d-block mb-3"/>
+          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="Exit" width="80" class="mx-auto d-block mb-3" draggable="false" loading="lazy"/>
           <h5 class="fw-bold">Exit this Page?</h5>
           <p class="text-muted mb-3">Are you sure you want to go back?</p>
           <div class="d-flex justify-content-center gap-3">
