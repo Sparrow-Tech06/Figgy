@@ -30,8 +30,8 @@
       background-color: var(--body-bg);
     }
    
-   .btn-green { background-color: var(--success); color: #fff ; }
-   .btn-yellow { background-color: var(--warning); color: #fff ; }
+   .btn-green { background-color: var(--success); color: #fff ; transition-duration: 0.3s; }
+   .btn-yellow { background-color: var(--warning); color: #fff ; transition-duration: 0.3s; }
 
    .btn-green:hover { background-color: var(--success); color: #fff ; transform:scale(0.95); }
    .btn-yellow:hover { background-color: var(--warning); color: #fff ; transform:scale(0.95); }
