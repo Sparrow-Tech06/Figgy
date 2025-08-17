@@ -26,8 +26,8 @@
       background-color: var(--body-bg);
     }
    
-   .bg-success { background-color: var(--success); }
-   .bg-warning { background-color: var(--warning); }
+   .bg-green { background-color: var(--success); }
+   .bg-yellow { background-color: var(--warning); }
 
 /***************************************************************/
     .navbar {
