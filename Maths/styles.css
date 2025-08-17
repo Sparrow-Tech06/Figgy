@@ -1,6 +1,7 @@
 :root {
     --body-bg: #ffffff;
     --primary-bg: #8B77D1 ;
+    --navbar: #8B77D1;
     --success: #24B66A ;
     --warning: #FFCA2C ;
 }
@@ -8,6 +9,7 @@
     :root {
        --body-bg: #05061B;
        --primary-bg: #313457 ;
+       --navbar: #313457 ;
        --success: #6958D6 ;
        --warning: #F87C58 ;
     }
@@ -23,17 +25,18 @@
       font-family: 'Poppins', sans-serif;
       background-color: var(--body-bg);
     }
-
+   
    .bg-success { background-color: var(--success); }
    .bg-warning { background-color: var(--warning); }
 
 /***************************************************************/
     .navbar {
-       background-color: #8B77D1 ;
+       background-color: var(--navbar) ;
     }
 #app {
    width: 100vw;
    height: 100vh;
+   background-color: var(--body-bg);
 }
 /***************************************************/
     .quiz-card {
