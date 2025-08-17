@@ -9,6 +9,7 @@
       font-family: 'Poppins', sans-serif;
       background-color: #fff;
     }
+/***************************************************************/
     .quiz-card {
       max-width: 660px;
       margin: auto;
@@ -53,7 +54,7 @@
       box-shadow: none;
     }
 
-    /* Snackbar */
+    /******************** Snackbar **************/
     #snackbar {
       visibility: hidden;
       min-width: 60px;
