@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Modal inject
+    // Modal HTML auto inject
     const modalHTML = `
     <div class="modal fade" id="backConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
@@ -20,12 +20,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const modal = new bootstrap.Modal(document.getElementById('backConfirmModal'));
     const yesBtn = document.getElementById("confirmBackYes");
 
-    // catch all back links (even if onclick present)
-    const backLinks = document.querySelectorAll("a.back-link");
+    // Select all possible back links
+    const backLinks = document.querySelectorAll(
+        "a.back-link, a[href='javascript:history.back()']"
+    );
 
     backLinks.forEach(link => {
         link.addEventListener("click", function (e) {
-            e.preventDefault();  // stop href / onclick
+            e.preventDefault();      // stop href or #
+            e.stopImmediatePropagation(); // stop inline onclick
             modal.show();
         });
     });
