@@ -1,198 +1,219 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Math Monster - Attack Mode</title>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    :root {
-      --monster-red: #f44336;
-      --player-green: #4caf50;
-      --bg-light: #ffffff;
-      --text-dark: #333;
+    body {
+      min-height: 100vh;
+      background: #ffffff ;
+      font-family: 'Segoe UI', sans-serif;
     }
-
-    body { font-family: 'Poppins', sans-serif; background: var(--bg-light); color: var(--text-dark); }
-
-    header h2 { font-weight: 700; }
-
-    .monster-img, .player-img { width: 180px; margin: auto; display: block; }
-
-    .hp-bar { height: 20px; background:#ddd; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
-    .hp-fill { height: 100%; transition: width 0.4s; }
-    .hp-fill.monster { background: var(--monster-red); }
-    .hp-fill.player { background: var(--player-green); }
-
-    .shake { animation: shake 0.4s; }
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
+    .card-glass {
+      margin:30px auto ;
+      padding: 1.5rem;
+     }
+    .entity {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
     }
-
-    /* Snackbar */
-    #snackbar {
-      visibility: hidden;
-      min-width: 250px;
-      background-color: #333;
-      color: #fff;
-      text-align: center;
+    .entity img {
+      height: 70px;
+      width: 70px;
+      object-fit: cover;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 3px solid #fff;
+      padding: 0px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+    .hp-bar {
+      flex-grow: 1;
+    }
+    .progress {
+      height: 16px;
       border-radius: 8px;
-      padding: 12px;
-      position: fixed;
-      z-index: 999;
-      left: 50%;
-      bottom: 30px;
-      transform: translateX(-50%);
-      opacity: 0;
-      transition: opacity 0.5s, bottom 0.5s;
+      overflow: hidden;
     }
-    #snackbar.show {
-      visibility: visible;
-      opacity: 1;
-      bottom: 50px;
+    .auto-text {
+      display: inline-block;
+      margin-bottom: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: #fff;
+      animation: fadein 0.5s;
     }
-
-    /* Remove outline from input */
-    input:focus {
-      outline: none !important;
-      box-shadow: none !important;
-      border-color: #ccc !important;
+    .auto-text.hero { background-color: #3b82f6; }
+    .auto-text.monster { background-color: #ef4444; }
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .shake {
+      animation: shake 0.4s;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .question-box {
+      font-size: 1.5rem;
+      padding: 3rem 1rem;
+      background: linear-gradient(135deg,#6366f1,#8b5cf6);
+      color: white;
+      border-radius: 1rem;
+      text-align: center;
+      margin: 2rem 0;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+    .attack-btn {
+      font-size: 1.2rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+    }
+    .modal-content {
+      text-align: center;
+      padding: 2rem;
+      border-radius: 1rem;
+    }
+    .modal-content img {
+      width: 50px;
+      height: 50px;
+      margin: 1rem auto ;
+      border-radius: 50% ;
+      animation: bounce 1s;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
   </style>
 </head>
 <body>
-<main id="app" class="container py-4">
-  <header class="text-center mb-4">
-    <h2>⚔️ Attack Mode - Defeat the Math Monster!</h2>
-  </header>
-
-  <!-- Monster HP -->
-  <section class="text-center">
-    <div class="hp-bar"><div class="hp-fill monster" :style="{width: monsterHP + '%'}"></div></div>
-    <img :class="['monster-img', monsterShake ? 'shake':'']" src="assets/monster.png" alt="Monster"/>
-    <p><b>Monster HP: {{ monsterHP }}%</b></p>
-  </section>
-
-  <!-- Question -->
-  <section v-if="monsterHP > 0 && playerHP > 0" class="mt-4 text-center">
-    <h4>Solve: {{ question.a }} {{ question.op }} {{ question.b }} = ?</h4>
-    <input v-model.number="playerAnswer" @keyup.enter="checkAnswer" type="number" 
-           class="form-control w-50 mx-auto mt-2" placeholder="Enter answer"/>
-    <button @click="checkAnswer" class="btn btn-primary mt-2">Attack!</button>
-  </section>
-
-  <!-- Player HP -->
-  <section v-if="playerHP > 0" class="mt-3 text-center">
-    <img class="player-img" src="assets/hero.png" alt="Player"/>
-    <p><b>Your HP: {{ playerHP }}%</b></p>
-    <div class="hp-bar"><div class="hp-fill player" :style="{width: playerHP + '%'}"></div></div>
-  </section>
-
-  <!-- Snackbar -->
-  <div id="snackbar">{{ snackbarMsg }}</div>
-
-  <!-- Modal (Win/Lose) -->
-  <div class="modal fade" id="resultModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center p-4">
-        <div v-if="monsterHP <= 0">
-          <img src="https://img.icons8.com/emoji/96/party-popper.png"/>
-          <h3 class="mt-2">🎉 Congratulations!</h3>
-          <p>You defeated the Monster!</p>
+  <div class="container card-glass">
+    <!-- Monster -->
+    <div class="entity" id="monsterEntity">
+      <img src="assets/monster.png" alt="Monster">
+      <div class="flex-grow-1">
+        <div id="monsterText" class="auto-text monster"></div>
+        <div class="hp-bar">
+          <div class="progress">
+            <div id="monsterHp" class="progress-bar bg-danger" style="width:100%">100%</div>
+          </div>
         </div>
-        <div v-if="playerHP <= 0">
-          <img src="https://img.icons8.com/emoji/96/crying-face.png"/>
-          <h3 class="mt-2">😢 Sorry!</h3>
-          <p>The Monster defeated you...</p>
-        </div>
-        <button class="btn btn-success mt-3" @click="resetGame">Play Again</button>
+       </div>
+    </div>
+<!-- Question -->
+<div class="question-box" id="questionBox">2 + 2 = ?</div>
+<div class="input-group mb-5">
+  <input type="number" id="answerInput" class="form-control" placeholder="Enter answer">
+  <button class="btn btn-primary attack-btn" id="attackBtn"><i class="bi bi-sword"></i> Attack</button>
+</div>
+
+<!-- Hero -->
+<div class="entity" id="heroEntity">
+  <img src="https://picsum.photos/70?random=2" alt="Hero">
+  <div class="flex-grow-1">
+    <div id="heroText" class="auto-text hero"></div>
+    <div class="hp-bar">
+      <div class="progress">
+        <div id="heroHp" class="progress-bar bg-success" style="width:100%">100%</div>
       </div>
     </div>
-  </div>
-</main>
+   </div>
+</div>
 
-<script>
-const { createApp, ref } = Vue;
+  </div>  <!-- Result Modal -->  
+  <div class="modal fade" id="resultModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <img id="resultImg" src="" alt="Result">
+        <h4 id="resultTitle"></h4>
+        <div class="mt-3">
+          <button class="btn btn-primary" onclick="window.location.href='index.html'">Home</button>
+          <button class="btn btn-secondary" onclick="location.reload()">Play Again</button>
+       </div>
+      </div>
+    </div>
+  </div>  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>  <script>
+    const questionBox = document.getElementById('questionBox');
+    const answerInput = document.getElementById('answerInput');
+    const attackBtn = document.getElementById('attackBtn');
+    const monsterHpBar = document.getElementById('monsterHp');
+    const heroHpBar = document.getElementById('heroHp');
+    const monsterEntity = document.getElementById('monsterEntity');
+    const heroEntity = document.getElementById('heroEntity');
+    const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+    const resultTitle = document.getElementById('resultTitle');
+    const resultImg = document.getElementById('resultImg');
 
-createApp({
-  setup() {
-    const monsterHP = ref(100);
-    const playerHP = ref(100);
-    const monsterShake = ref(false);
-    const playerAnswer = ref("");
-    const snackbarMsg = ref("");
-    const question = ref(generateQuestion());
+    let monsterHp = 100;
+    let heroHp = 100;
+    let currentAnswer;
 
-    function generateQuestion() {
-      const a = Math.floor(Math.random() * 10) + 1;
-      const b = Math.floor(Math.random() * 10) + 1;
-      const ops = ["+", "-", "*"];
-      const op = ops[Math.floor(Math.random() * ops.length)];
-      return { a, b, op };
+    const heroTexts = ["I'm ready!","Let's go!","For glory!","Attack!"]; 
+    const monsterTexts = ["Grrr!","You can't win!","Rawr!","Feel my power!"];
+
+    function randomText(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+    function updateAutoTexts(){
+      document.getElementById('heroText').textContent = randomText(heroTexts);
+      document.getElementById('monsterText').textContent = randomText(monsterTexts);
     }
+    setInterval(updateAutoTexts, 2000);
+    updateAutoTexts();
 
-    function getAnswer(q) {
-      switch (q.op) {
-        case "+": return q.a + q.b;
-        case "-": return q.a - q.b;
-        case "*": return q.a * q.b;
-      }
+    function generateQuestion(){
+      let a = Math.floor(Math.random()*10)+1;
+      let b = Math.floor(Math.random()*10)+1;
+      currentAnswer = a+b;
+      questionBox.textContent = `${a} + ${b} = ?`;
     }
+    generateQuestion();
 
-    function showSnackbar(msg) {
-      snackbarMsg.value = msg;
-      let x = document.getElementById("snackbar");
-      x.className = "show";
-      setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000);
-    }
+    function attack(){
+      const ans = parseInt(answerInput.value);
+      if(isNaN(ans)) return;
 
-    function checkAnswer() {
-      if (playerAnswer.value === "") return;
-      const correct = getAnswer(question.value);
-      if (playerAnswer.value === correct) {
-        monsterHP.value = Math.max(0, monsterHP.value - 20);
-        showSnackbar("✅ Correct Hit!");
-        if (monsterHP.value <= 0) {
-          setTimeout(() => {
-            new bootstrap.Modal(document.getElementById('resultModal')).show();
-            confetti();
-          }, 400);
-        }
+      if(ans === currentAnswer){
+        monsterHp -= 20;
+        if(monsterHp < 0) monsterHp = 0;
+        monsterHpBar.style.width = monsterHp + '%';
+        monsterHpBar.textContent = monsterHp + '%';
+        monsterEntity.classList.add('shake');
+        setTimeout(()=> monsterEntity.classList.remove('shake'),400);
       } else {
-        playerHP.value = Math.max(0, playerHP.value - 20);
-        showSnackbar("❌ Wrong Answer!");
-        monsterShake.value = true;
-        setTimeout(() => monsterShake.value = false, 400);
-        if (playerHP.value <= 0) {
-          setTimeout(() => {
-            new bootstrap.Modal(document.getElementById('resultModal')).show();
-          }, 400);
-        }
+        heroHp -= 20;
+        if(heroHp < 0) heroHp = 0;
+        heroHpBar.style.width = heroHp + '%';
+        heroHpBar.textContent = heroHp + '%';
+        heroEntity.classList.add('shake');
+        setTimeout(()=> heroEntity.classList.remove('shake'),400);
       }
-      playerAnswer.value = "";
-      if (monsterHP.value > 0 && playerHP.value > 0) {
-        question.value = generateQuestion();
+      answerInput.value = '';
+      generateQuestion();
+      checkGameOver();
+    }
+
+    function checkGameOver(){
+      if(monsterHp === 0){
+        resultTitle.textContent = "You Win!";
+        resultImg.src = "https://picsum.photos/50?random=3";
+        resultModal.show();
+      } else if(heroHp === 0){
+        resultTitle.textContent = "You Lose!";
+        resultImg.src = "https://picsum.photos/50?random=4";
+        resultModal.show();
       }
     }
 
-    function resetGame() {
-      monsterHP.value = 100;
-      playerHP.value = 100;
-      playerAnswer.value = "";
-      question.value = generateQuestion();
-      bootstrap.Modal.getInstance(document.getElementById('resultModal')).hide();
-    }
-
-    return { monsterHP, playerHP, monsterShake, question, playerAnswer, snackbarMsg, checkAnswer, resetGame };
-  }
-}).mount("#app");
-</script>
-</body>
+    attackBtn.addEventListener('click', attack);
+    answerInput.addEventListener('keyup', e=>{ if(e.key==='Enter') attack(); });
+  </script></body>
 </html>
