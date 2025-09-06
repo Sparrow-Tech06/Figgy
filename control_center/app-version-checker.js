@@ -1,14 +1,16 @@
 const webVersion = "5.2"; // Website-required version
+let isPopupShown = false; // 🔹 Track popup state
 
 function checkVersion() {
-   // const appVersion = Android.getAppVersion(); // Android to WebView version fetch
-      const appVersion = "5.0"; // 🔹 Demo/Test purpose manual app version comment it for real 
-    if (appVersion !== webVersion) {
+    // const appVersion = Android.getAppVersion(); // Android to WebView version fetch
+    const appVersion = "5.0"; // 🔹 Demo/Test purpose manual app version comment it for real 
+    if (appVersion !== webVersion && !isPopupShown) {
         showUpdatePopup();
     }
 }
 
 function showUpdatePopup() {
+    isPopupShown = true; // Mark popup as shown
     Swal.fire({
         title: "New Version Available",
         text: "Your app version is outdated. Please update to continue.",
@@ -21,6 +23,9 @@ function showUpdatePopup() {
         didOpen: () => {
             const popup = Swal.getPopup();
             popup.classList.add("no-close");
+        },
+        willClose: () => {
+            isPopupShown = false; // Reset flag when popup closes
         }
     });
 }
@@ -32,3 +37,5 @@ window.onload = () => {
     // Every 1 seconds check again
     setInterval(checkVersion, 1000);
 };
+
+
