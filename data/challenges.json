@@ -1,14 +1,5 @@
 [
-  {
-    "title": "PUZZLE",
-    "type": "puzzle"
-  },
-  {
-    "title": "MATH",
-    "type": "math"
-  },
-  {
-    "title": "LOGIC",
-    "type": "puzzle"
-  }
+  { "id": "puzzle", "title": "PUZZLE", "color": "puzzle" },
+  { "id": "math", "title": "MATH", "color": "math" },
+  { "id": "logic", "title": "LOGIC", "color": "puzzle" }
 ]
