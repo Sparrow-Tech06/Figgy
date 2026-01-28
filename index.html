@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Brain Trainer</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0f1115;
+  --card:#171a20;
+  --card2:#1d2129;
+  --text:#eaeaf0;
+  --muted:#9aa0aa;
+  --puzzle:#9b8cff;
+  --math:#ff9f1a;
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui;
+}
+.app{
+  max-width:660px;
+  margin:auto;
+  padding:12px;
+}
+a{text-decoration:none;color:inherit}
+
+/* HEADER */
+header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+}
+.menu-btn{font-size:22px}
+
+/* TITLES */
+.section-title{
+  margin:14px 0 8px;
+  font-size:12px;
+  letter-spacing:2px;
+  color:var(--muted);
+}
+
+/* SCROLL */
+.h-scroll{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+}
+
+/* STATUS */
+.status-box{
+  min-width:120px;
+  padding:12px 18px;
+  background:var(--card);
+  border-radius:50px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:600;
+}
+
+/* CHALLENGE */
+.challenge-card{
+  min-width:200px;
+  background:var(--card2);
+  border-radius:16px;
+  padding:16px;
+  font-weight:700;
+  display:flex;
+  justify-content:space-between;
+}
+.challenge-card.puzzle{color:var(--puzzle)}
+.challenge-card.math{color:var(--math)}
+.challenge-card.active{outline:2px solid #2b3140}
+
+/* CONTENT */
+.topic-card{
+  background:var(--card2);
+  border-radius:18px;
+  padding:18px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.topic-card img{width:90px}
+</style>
+</head>
+
+<body>
+<main class="app">
+
+<header>
+  <i class="bi bi-list menu-btn"></i>
+  <h1 class="m-0">Brain Trainer</h1>
+</header>
+
+<section id="statusSection"></section>
+
+<div class="section-title">TODAY'S CHALLENGE</div>
+<section class="h-scroll" id="challengeContainer"></section>
+
+<section id="topicContent" class="mt-3"></section>
+
+</main>
+
+<script>
+let sprintData={};
+
+/* STATUS */
+fetch('data/status.json')
+.then(r=>r.json())
+.then(d=>{
+  if(!d.length) return;
+  statusSection.innerHTML='<div class="h-scroll"></div>';
+  const row=statusSection.querySelector('.h-scroll');
+  d.forEach(s=>{
+    row.innerHTML+=`
+      <a href="${s.link}" class="status-box">
+        <i class="bi ${s.icon}"></i> ${s.title}
+      </a>`;
+  });
+});
+
+/* LOAD SPRINT */
+fetch('data/sprint.json')
+.then(r=>r.json())
+.then(d=>sprintData=d);
+
+/* CHALLENGES */
+fetch('data/challenges.json')
+.then(r=>r.json())
+.then(list=>{
+  list.forEach((c,i)=>{
+    const div=document.createElement('div');
+    div.className=`challenge-card ${c.color} ${i==0?'active':''}`;
+    div.innerHTML=`${c.title} <i class="bi bi-play-fill"></i>`;
+    div.onclick=()=>{
+      document.querySelectorAll('.challenge-card').forEach(x=>x.classList.remove('active'));
+      div.classList.add('active');
+      renderTopics(c.id);
+    };
+    challengeContainer.appendChild(div);
+    if(i===0) renderTopics(c.id);
+  });
+});
+
+function renderTopics(type){
+  const data=sprintData[type]||[];
+  topicContent.innerHTML='';
+  data.forEach(t=>{
+    topicContent.innerHTML+=`
+      <a href="${t.link}" class="topic-card mb-3">
+        <div>
+          <small class="text-secondary">${t.label}</small>
+          <h4 class="fw-bold">${t.title}</h4>
+          <p class="text-muted mb-0">${t.desc}</p>
+        </div>
+        <img src="${t.image}">
+      </a>`;
+  });
+}
+</script>
+
+</body>
+</html>
