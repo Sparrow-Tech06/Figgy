@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Puzzle Pattern Game</title>  <!-- Bootstrap CSS -->  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">  <style>
+    body{
+      background:#0e0f13;
+      color:#fff;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+    }
+    .app{
+      max-width:660px;
+      margin:auto;
+      min-height:100vh;
+    }
+    header{
+      background:#151821;
+      padding:12px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
+    header h1{font-size:18px;margin:0;}
+
+    .card-dark{
+      background:#151821;
+      border-radius:16px;
+      border:1px solid #1f2433;
+    }
+
+    .pattern-box{
+      font-size:22px;
+      letter-spacing:4px;
+      font-weight:600;
+    }
+
+    .option{
+      background:#0e111b;
+      border:1px solid #252a3d;
+      border-radius:14px;
+      padding:12px;
+      text-align:center;
+      cursor:pointer;
+      transition:.2s;
+      font-size:18px;
+    }
+    .option:hover{background:#1b2030;}
+    .correct{background:#0f5132;border-color:#198754;}
+    .wrong{background:#842029;border-color:#dc3545;}
+  </style></head>
+<body>
+<div class="app">  <!-- Header -->  <header>
+    <i class="bi bi-arrow-left"></i>
+    <h1>Puzzle Pattern</h1>
+    <i class="bi bi-lightbulb"></i>
+  </header>  <!-- Game -->  <section class="p-3">
+    <div class="card-dark p-3"><div class="d-flex justify-content-between mb-2">
+    <span><i class="bi bi-stars text-warning"></i> Score: <b id="score">0</b></span>
+    <span><i class="bi bi-clock"></i> <span id="timer">40</span>s</span>
+  </div>
+
+  <div class="text-center my-4">
+    <div class="text-secondary mb-2">Find the missing pattern</div>
+    <div class="pattern-box" id="pattern">2 4 6 ?</div>
+  </div>
+
+  <div class="row g-3" id="options"></div>
+
+</div>
+
+  </section></div><script>
+  const patterns = [
+    { seq: [2,4,6,'?'], answer: 8, options: [8,10,6,12] },
+    { seq: [1,4,9,'?'], answer: 16, options: [12,16,18,25] },
+    { seq: [3,6,12,'?'], answer: 24, options: [18,20,24,30] },
+    { seq: [5,10,20,'?'], answer: 40, options: [30,35,40,50] },
+    { seq: [2,6,12,'?'], answer: 20, options: [18,20,24,30] }
+  ];
+
+  const patternEl = document.getElementById('pattern');
+  const optionsEl = document.getElementById('options');
+  const scoreEl = document.getElementById('score');
+  const timerEl = document.getElementById('timer');
+
+  let score = 0;
+  let time = 40;
+  let current;
+
+  function loadPattern(){
+    current = patterns[Math.floor(Math.random()*patterns.length)];
+    patternEl.textContent = current.seq.join(' ');
+    optionsEl.innerHTML = '';
+
+    current.options.sort(()=>Math.random()-0.5).forEach(val=>{
+      const col = document.createElement('div');
+      col.className = 'col-6';
+      col.innerHTML = `<div class="option">${val}</div>`;
+      col.onclick = ()=>check(col.firstChild,val);
+      optionsEl.appendChild(col);
+    });
+  }
+
+  function check(el,val){
+    if(val === current.answer){
+      el.classList.add('correct');
+      score++;
+      scoreEl.textContent = score;
+    }else{
+      el.classList.add('wrong');
+    }
+    setTimeout(loadPattern,700);
+  }
+
+  function startTimer(){
+    const t = setInterval(()=>{
+      time--;
+      timerEl.textContent = time;
+      if(time<=0){
+        clearInterval(t);
+        alert('Time Up! Your Score: '+score);
+      }
+    },1000);
+  }
+
+  loadPattern();
+  startTimer();
+</script></body>
+</html>
