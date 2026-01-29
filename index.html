@@ -18,17 +18,18 @@
   --puzzle:#9b8cff;
   --math:#ff9f1a;
 }
+
 body{
   background:var(--bg);
   color:var(--text);
   font-family:system-ui;
 }
+
 a{text-decoration:none;color:inherit}
 
 .app{
   max-width:660px;
   margin:0 auto;
-  padding: 0px;
 }
 
 /* HEADER */
@@ -38,6 +39,7 @@ header{
   justify-content:space-between;
   margin-bottom:14px;
   background:var(--card);
+  padding:12px 14px;
 }
 .header-left{
   display:flex;
@@ -47,13 +49,22 @@ header{
 .menu-btn{font-size:22px}
 .notify-btn{font-size:20px}
 
-/* SECTION TITLE */
- section { padding:14px; }
+/* SECTION */
+section{padding:14px}
+
 .section-title{
   margin:14px 0 8px;
   font-size:12px;
   letter-spacing:2px;
   color:var(--muted);
+}
+.section-title::after{
+  content:'';
+  display:block;
+  width:40px;
+  height:2px;
+  background:#2f3750;
+  margin-top:6px;
 }
 
 /* HORIZONTAL SCROLL */
@@ -72,21 +83,12 @@ header{
   background:var(--card);
   border-radius:50%;
   display:flex;
-  flex-direction:column;
   justify-content:center;
   align-items:center;
-  gap:6px;
-  font-weight:600;
+  font-weight:700;
   scroll-snap-align:start;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 }
-.status-box i{
-  font-size:22px;
-}
-.status-box span {
-  font-size:10px;
-  display:none ;
-}
+.status-box i{font-size:22px}
 
 /* CHALLENGE */
 .challenge-card{
@@ -99,11 +101,16 @@ header{
   justify-content:space-between;
   align-items:center;
   scroll-snap-align:start;
+  transition:.25s ease;
 }
+.challenge-card:active{transform:scale(.96)}
+
 .challenge-card.puzzle{color:var(--puzzle)}
 .challenge-card.math{color:var(--math)}
+
 .challenge-card.active{
-  outline:2px solid #2b3140;
+  background:linear-gradient(135deg,#222736,#1a1e2a);
+  box-shadow:0 0 0 2px #2f3750 inset;
 }
 
 /* TOPIC */
@@ -114,12 +121,27 @@ header{
   display:flex;
   align-items:center;
   gap:14px;
+  transition:.25s ease;
 }
+.topic-card:active{transform:scale(.97)}
+
 .topic-card img{
   width:90px;
-  aspect-ratio:1 / 1;
+  aspect-ratio:1/1;
   object-fit:contain;
 }
+
+/* IMAGE SKELETON */
+.img-skeleton{
+  background:linear-gradient(90deg,#1f2430,#2a3140,#1f2430);
+  background-size:200% 100%;
+  animation:shimmer 1.2s infinite;
+}
+@keyframes shimmer{
+  0%{background-position:200%}
+  100%{background-position:-200%}
+}
+  
 </style>
 </head>
 
