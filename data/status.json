@@ -1,17 +1,5 @@
 [
-  {
-    "title": "80 IN 08",
-    "icon": "bi-lightning-fill",
-    "link": "status-80.html"
-  },
-  {
-    "title": "LIVE",
-    "icon": "bi-broadcast",
-    "link": "live.html"
-  },
-  {
-    "title": "XP BOOST",
-    "icon": "bi-hexagon",
-    "link": "xp.html"
-  }
+  { "title":"Coins", "icon":"bi-coin", "link":"coins.html" },
+  { "title":"Level", "icon":"bi-bar-chart", "link":"level.html" },
+  { "title":"Streak", "icon":"bi-fire", "link":"streak.html" }
 ]
