@@ -130,6 +130,105 @@ section{padding:14px}
   0%{background-position:200%}
   100%{background-position:-200%}
 }
+/********************************/
+.share-card{
+  width: 100%;
+  max-width:420px;
+  background:var(--card2);
+  border-radius:20px;
+  padding:22px;
+  position:relative;
+  overflow:hidden;
+}
+
+.title{
+  color:var(--text);
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+
+.subtitle{
+  color:var(--muted);
+  margin-top:6px;
+  font-size:15px;
+}
+
+.reward{
+  margin-top:12px;
+  color:var(--green);
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.actions{
+  margin-top:22px;
+  display:flex;
+  gap:12px;
+}
+
+.invite-btn{
+  flex:1;
+  background:#0f0f0f;
+  border:2px solid var(--green);
+  color:white;
+  padding:14px;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:700;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+}
+
+.invite-btn:active{
+  transform:scale(.98);
+}
+
+.copy-btn{
+  width:56px;
+  height:56px;
+  background:#2a2a2a;
+  border-radius:14px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-size:22px;
+  cursor:pointer;
+  position:relative;
+}
+
+.copy-btn.copied{
+  background:var(--green);
+  color:black;
+}
+
+.copy-btn span{
+  position:absolute;
+  bottom:-22px;
+  font-size:12px;
+  color:var(--green);
+  display:none;
+}
+
+.copy-btn.copied span{
+  display:block;
+}
+
+/* Decorative character */
+.character{
+  position:absolute;
+  right:-15px;
+  top:-17px;
+  font-size:110px;
+  color:var(--green);
+  opacity:.9;
+}
   
 </style>
 </head>
@@ -159,6 +258,27 @@ section{padding:14px}
 </section>
 
 <section aria-label="Topics" id="topicContent" class="mt-3"></section>
+
+<section aria-label="Share" class="share-card">
+   <div class="title">SHARE THE CHALLENGE</div>
+   <div class="subtitle">
+      Matiks just feels better with your friends
+  </div>
+
+  <div class="actions">
+    <div class="invite-btn" onclick="shareWhatsApp()">
+      <i class="bi bi-whatsapp"></i>
+      INVITE FRIEND
+    </div>
+
+    <div class="copy-btn" id="copyBtn" onclick="copyLink()">
+      <i class="bi bi-clipboard"></i>
+      <span>Copied</span>
+    </div>
+  </div>
+
+  <div class="character">⚡</div>
+</section>
 
 </main>
 
@@ -249,6 +369,28 @@ function renderTopics(type){
                onload="this.classList.remove('img-skeleton')">
         </a>
       </article>`;
+  });
+}
+</script>
+
+ <script>
+const shareText =
+`🔥 Challenge Accepted!
+Join me on Matiks & earn rewards 🧠💰
+👉 https://example.com/app`;
+
+function shareWhatsApp(){
+  const url = "https://wa.me/?text=" + encodeURIComponent(shareText);
+  window.open(url, "_blank");
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(shareText).then(()=>{
+    const btn = document.getElementById("copyBtn");
+    btn.classList.add("copied");
+    setTimeout(()=>{
+      btn.classList.remove("copied");
+    },1500);
   });
 }
 </script>
