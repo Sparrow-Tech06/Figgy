@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+
+<title>Brain Trainer</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+/* ================= THEME ================= */
+:root{
+  --bg:#0f1115;
+  --card:#171a20;
+  --card2:#1d2129;
+  --text:#ffffff;
+  --muted:#9a9a9a;
+
+  --puzzle:#9b8cff;
+  --math:#ff9f1a;
+  --green:#9BFF7A;
+
+  --radius:18px;
+  --radius-sm:14px;
+  --border:#2f3750;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+}
+
+a{color:inherit;text-decoration:none}
+
+.app{
+  max-width:660px;
+  margin:auto;
+}
+
+/* ================= HEADER ================= */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  background:var(--card2);
+  border-bottom:1px solid var(--border);
+}
+
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.menu-btn{
+  font-size:22px;
+  opacity:.85;
+}
+
+.notify-btn{
+  width:42px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--card);
+  border-radius:50%;
+  border:1px solid var(--border);
+  font-size:18px;
+}
+
+/* ================= SECTION ================= */
+section{
+  padding:16px;
+}
+
+.section-title{
+  margin:14px 0 10px;
+  font-size:11px;
+  letter-spacing:2px;
+  color:var(--muted);
+}
+
+.section-title::after{
+  content:'';
+  display:block;
+  width:36px;
+  height:2px;
+  background:var(--border);
+  margin-top:6px;
+}
+
+/* ================= HORIZONTAL SCROLL ================= */
+.h-scroll{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+}
+.h-scroll::-webkit-scrollbar{display:none}
+
+/* ================= STATUS ================= */
+.status-box{
+  min-width:60px;
+  height:60px;
+  background:var(--card2);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  scroll-snap-align:start;
+  border:1px solid var(--border);
+}
+
+.status-box i{font-size:22px}
+
+/* ================= CHALLENGE ================= */
+.challenge-card{
+  min-width:160px;
+  padding:16px 22px;
+  border-radius:var(--radius);
+  background:var(--card2);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:700;
+  scroll-snap-align:start;
+  transition:.2s ease;
+  border:1px solid transparent;
+}
+
+.challenge-card:active{transform:scale(.96)}
+
+.challenge-card.puzzle{color:var(--puzzle)}
+.challenge-card.math{color:var(--math)}
+
+.challenge-card.active{
+  background:linear-gradient(135deg,#222736,#1a1e2a);
+  border-color:var(--border);
+}
+
+/* ================= TOPIC ================= */
+.topic-card{
+  background:var(--card2);
+  border-radius:var(--radius);
+  padding:18px;
+  display:flex;
+  gap:14px;
+  transition:.2s ease;
+  border:1px solid var(--border);
+}
+
+.topic-card:active{transform:scale(.97)}
+
+.topic-card img{
+  width:90px;
+  aspect-ratio:1/1;
+  object-fit:contain;
+}
+
+.text-mute{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* ================= IMAGE SKELETON ================= */
+.img-skeleton{
+  background:linear-gradient(90deg,#1f2430,#2a3140,#1f2430);
+  background-size:200% 100%;
+  animation:shimmer 1.2s infinite;
+}
+
+@keyframes shimmer{
+  0%{background-position:200%}
+  100%{background-position:-200%}
+}
+
+/* ================= SHARE CARD ================= */
+.share-card{
+  background:var(--card2);
+  border-radius:var(--radius);
+  padding:18px;
+  margin:40px 16px;
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+
+.share-card .title{
+  font-size:20px;
+  font-weight:800;
+}
+
+.actions{
+  display:flex;
+  gap:12px;
+  margin-top:22px;
+}
+
+.invite-btn{
+  flex:1;
+  background:#0f0f0f;
+  border:2px solid var(--green);
+  border-radius:var(--radius-sm);
+  padding:14px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.invite-btn:active{transform:scale(.97)}
+
+.copy-btn{
+  width:56px;
+  height:56px;
+  border-radius:var(--radius-sm);
+  background:#2a2a2a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  position:relative;
+}
+
+.copy-btn.copied{
+  background:var(--green);
+  color:#000;
+}
+
+.copy-btn span{
+  position:absolute;
+  bottom:-22px;
+  font-size:11px;
+  color:var(--green);
+  display:none;
+}
+
+.copy-btn.copied span{display:block}
+
+.character{
+  position:absolute;
+  right:-10px;
+  top:-18px;
+  font-size:82px;
+  opacity:.85;
+  color:var(--green);
+}
+</style>
+</head>
+
+<body>
+
+<main class="app" role="application">
+
+<header>
+  <div class="header-left">
+    <i class="bi bi-list menu-btn"></i>
+    <h1 class="fs-4 m-0">Brain Trainer</h1>
+  </div>
+
+  <a href="notifications.html" class="notify-btn" aria-label="Notifications">
+    <i class="bi bi-bell"></i>
+  </a>
+</header>
+
+<section aria-label="Status">
+  <div id="statusSection"></div>
+</section>
+
+<section aria-label="Challenges">
+  <div class="section-title">TODAY'S CHALLENGE</div>
+  <nav class="h-scroll" id="challengeContainer"></nav>
+</section>
+
+<section id="topicContent" aria-label="Topics"></section>
+
+<section class="share-card" aria-label="Share Challenge">
+  <div class="title">SHARE THE CHALLENGE</div>
+  <p class="text-mute mt-1">
+    Matiks feels better when you play with friends
+  </p>
+
+  <div class="actions">
+    <div class="invite-btn" onclick="shareWhatsApp()">
+      <i class="bi bi-whatsapp"></i> INVITE FRIEND
+    </div>
+
+    <div class="copy-btn" id="copyBtn" onclick="copyLink()">
+      <i class="bi bi-clipboard"></i>
+      <span>Copied</span>
+    </div>
+  </div>
+
+  <div class="character">⚡</div>
+</section>
+
+</main>
+
+<script>
+let sprintData={};
+
+/* STATUS */
+fetch('data/status.json')
+.then(r=>r.json())
+.then(d=>{
+  if(!d.length) return;
+  statusSection.innerHTML='<div class="h-scroll"></div>';
+  const row=statusSection.querySelector('.h-scroll');
+
+  d.forEach(s=>{
+    row.innerHTML+=`
+      <a href="${s.link}" class="status-box">
+        <i class="bi ${s.icon}"></i>
+      </a>`;
+  });
+});
+
+/* LOAD SPRINT */
+fetch('data/sprint.json')
+.then(r=>r.json())
+.then(data=>{
+  sprintData=data;
+  buildChallenges();
+});
+
+function buildChallenges(){
+  Object.keys(sprintData).forEach((key,i)=>{
+    const c=sprintData[key];
+    const div=document.createElement('div');
+
+    div.className=`challenge-card ${c.color} ${i===0?'active':''}`;
+    div.innerHTML=`${key.toUpperCase()} <i class="bi bi-play-fill"></i>`;
+
+    div.onclick=()=>{
+      navigator.vibrate?.(25);
+      document.querySelectorAll('.challenge-card')
+        .forEach(x=>x.classList.remove('active'));
+      div.classList.add('active');
+      renderTopics(key);
+    };
+
+    challengeContainer.appendChild(div);
+    if(i===0) renderTopics(key);
+  });
+}
+
+function renderTopics(type){
+  const topics=sprintData[type].topics||[];
+  topicContent.innerHTML='';
+
+  if(!topics.length){
+    topicContent.innerHTML=`
+      <div class="text-center text-muted py-5">
+        <i class="bi bi-inbox fs-1"></i>
+        <p>No challenges available</p>
+      </div>`;
+    return;
+  }
+
+  topics.forEach(t=>{
+    topicContent.innerHTML+=`
+    <article class="mb-3">
+      <a href="${t.link}" class="topic-card">
+        <div class="flex-grow-1">
+          <small class="text-secondary">${t.label}</small>
+          <h4 class="fw-bold">${t.title}</h4>
+          <p class="text-mute mb-2">${t.desc}</p>
+          ${t.progress!=null?`
+          <div class="progress" style="height:4px">
+            <div class="progress-bar" style="width:${t.progress}%"></div>
+          </div>`:''}
+        </div>
+
+        <img src="${t.image}"
+             loading="lazy"
+             class="img-skeleton"
+             onload="this.classList.remove('img-skeleton')">
+      </a>
+    </article>`;
+  });
+}
+</script>
+
+<script>
+const shareText=`🔥 Challenge Accepted!
+Join me on Matiks 🧠💰
+👉 https://example.com/app`;
+
+function shareWhatsApp(){
+  window.open(
+    "https://wa.me/?text="+encodeURIComponent(shareText),
+    "_blank"
+  );
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(shareText).then(()=>{
+    const btn=document.getElementById("copyBtn");
+    btn.classList.add("copied");
+    setTimeout(()=>btn.classList.remove("copied"),1500);
+  });
+}
+</script>
+
+</body>
+</html>
