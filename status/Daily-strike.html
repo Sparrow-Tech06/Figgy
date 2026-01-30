@@ -1,1 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daily Strike</title>
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0f1115;
+  --card:#1a1d23;
+  --accent:#ff9f1c;
+  --text:#eaeaea;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:system-ui;
+}
+
+.card-ui{
+  width:100%;
+  max-width:380px;
+  background:var(--card);
+  border-radius:22px;
+  padding:42px 24px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,.5);
+}
+
+/* Strike Circle */
+.streak-circle{
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background:linear-gradient(145deg,#ffb347,#ff9f1c);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:0 auto 20px;
+  box-shadow:0 0 30px rgba(255,159,28,.4);
+}
+
+.streak-number{
+  font-size:56px;
+  font-weight:800;
+  color:#000;
+}
+
+.subtitle{
+  font-size:15px;
+  opacity:.75;
+  margin-bottom:32px;
+}
+
+.btn-strike{
+  width:100%;
+  height:56px;
+  border-radius:14px;
+  font-size:18px;
+  font-weight:700;
+  background:var(--accent);
+  border:none;
+  color:#000;
+}
+
+.btn-strike:disabled{
+  background:#555;
+  color:#ccc;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card-ui">
+
+  <div class="streak-circle">
+    <div class="streak-number" id="streak">1</div>
+  </div>
+
+  <div class="subtitle">
+    Maintain your daily consistency to grow the streak
+  </div>
+
+  <button class="btn-strike" id="strikeBtn">STRIKE</button>
+
+</div>
+
+<!-- Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+const streakEl = document.getElementById("streak");
+const btn = document.getElementById("strikeBtn");
+
+const today = new Date().toDateString();
+const lastDate = localStorage.getItem("strikeDate");
+
+let streak = parseInt(localStorage.getItem("strikeCount")) || 1;
+
+// Reset logic if new user
+if(!lastDate){
+  localStorage.setItem("strikeCount", 1);
+  localStorage.setItem("strikeDate", "");
+}
+
+streakEl.innerText = streak;
+
+// Already completed today
+if(lastDate === today){
+  btn.disabled = true;
+  btn.innerText = "Come back tomorrow";
+}
+
+btn.onclick = () => {
+  const now = new Date().toDateString();
+
+  if(localStorage.getItem("strikeDate") !== now){
+    streak++;
+    localStorage.setItem("strikeCount", streak);
+    localStorage.setItem("strikeDate", now);
+
+    streakEl.innerText = streak;
+    btn.disabled = true;
+    btn.innerText = "Come back tomorrow";
+
+    confetti({
+      particleCount:180,
+      spread:90,
+      origin:{ y:0.6 }
+    });
+  }
+};
+</script>
+
+</body>
+  </html>
