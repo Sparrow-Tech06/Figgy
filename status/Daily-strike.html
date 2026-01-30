@@ -10,7 +10,7 @@
 <style>
 :root{
   --bg:#0f1115;
-  --card:#1d2129;
+  --card:#1a1d23;
   --accent:#ff9f1c;
   --text:#eaeaea;
 }
@@ -20,8 +20,8 @@ body{
   color:var(--text);
   min-height:100vh;
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
   font-family:system-ui;
 }
 
@@ -29,42 +29,46 @@ body{
   width:100%;
   max-width:380px;
   background:var(--card);
-  border-radius:22px;
-  padding:42px 24px;
+  border-radius:20px;
+  padding:40px 24px;
   text-align:center;
   box-shadow:0 20px 40px rgba(0,0,0,.5);
 }
 
-/* Strike Circle */
-.streak-circle{
-  width:140px;
-  height:140px;
+.streak-box{
+  width:160px;
+  height:160px;
   border-radius:50%;
-  background:linear-gradient(145deg,#ffb347,#ff9f1c);
+  background:radial-gradient(circle,#2a2f38,#12141a);
   display:flex;
-  justify-content:center;
   align-items:center;
-  margin:0 auto 20px;
-  box-shadow:0 0 30px rgba(255,159,28,.4);
+  justify-content:center;
+  flex-direction:column;
+  margin:0 auto 30px;
+  box-shadow:0 0 30px rgba(255,159,28,.25);
 }
 
 .streak-number{
   font-size:56px;
   font-weight:800;
-  color:#000;
+  line-height:1;
 }
 
+.streak-label{
+  font-size:13px;
+  letter-spacing:1px;
+  opacity:.75;
+}
 .subtitle{
   font-size:15px;
   opacity:.75;
-  margin-bottom:32px;
+  margin-bottom:30px;
 }
-
 .btn-strike{
   width:100%;
   height:56px;
   border-radius:14px;
-  font-size:18px;
+  font-size:17px;
   font-weight:700;
   background:var(--accent);
   border:none;
@@ -72,8 +76,8 @@ body{
 }
 
 .btn-strike:disabled{
-  background:#555;
-  color:#ccc;
+  background:#444;
+  color:#aaa;
 }
 </style>
 </head>
@@ -82,20 +86,16 @@ body{
 
 <div class="card-ui">
 
-  <div class="streak-circle">
+  <div class="streak-box">
     <div class="streak-number" id="streak">1</div>
+    <div class="streak-label">DAYS STREAK</div>
   </div>
-
-  <div class="subtitle">
-    Maintain your daily consistency to grow the streak
-  </div>
-
+  <div class="subtitle">Complete today’s focus ritual to grow your streak</div>
   <button class="btn-strike" id="strikeBtn">STRIKE</button>
-
 </div>
 
-<!-- Confetti -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="get-coin.js"></script>
 
 <script>
 const streakEl = document.getElementById("streak");
@@ -105,41 +105,35 @@ const today = new Date().toDateString();
 const lastDate = localStorage.getItem("strikeDate");
 
 let streak = parseInt(localStorage.getItem("strikeCount")) || 1;
-
-// Reset logic if new user
-if(!lastDate){
-  localStorage.setItem("strikeCount", 1);
-  localStorage.setItem("strikeDate", "");
-}
-
 streakEl.innerText = streak;
 
-// Already completed today
+// already struck today
 if(lastDate === today){
   btn.disabled = true;
   btn.innerText = "Come back tomorrow";
 }
 
 btn.onclick = () => {
-  const now = new Date().toDateString();
+  streak++;
+  localStorage.setItem("strikeCount", streak);
+  localStorage.setItem("strikeDate", today);
 
-  if(localStorage.getItem("strikeDate") !== now){
-    streak++;
-    localStorage.setItem("strikeCount", streak);
-    localStorage.setItem("strikeDate", now);
+  streakEl.innerText = streak;
+  btn.disabled = true;
+  btn.innerText = "Come back tomorrow";
 
-    streakEl.innerText = streak;
-    btn.disabled = true;
-    btn.innerText = "Come back tomorrow";
+  // 🎉 confetti
+  confetti({
+    particleCount:160,
+    spread:90,
+    origin:{ y:0.6 }
+  });
 
-    confetti({
-      particleCount:180,
-      spread:90,
-      origin:{ y:0.6 }
-    });
-  }
+  // 💰 reward
+  getCoin(10);
 };
 </script>
 
 </body>
-  </html>
+</html>
+
