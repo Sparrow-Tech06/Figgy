@@ -12,6 +12,7 @@
   --bg:#0f1115;
   --card:#1a1d23;
   --accent:#ff9f1c;
+  --coin:#4da3ff;
   --text:#eaeaea;
 }
 
@@ -51,19 +52,14 @@ body{
 .streak-number{
   font-size:56px;
   font-weight:800;
-  line-height:1;
 }
 
 .streak-label{
   font-size:13px;
   letter-spacing:1px;
-  opacity:.75;
+  opacity:.7;
 }
-.subtitle{
-  font-size:15px;
-  opacity:.75;
-  margin-bottom:30px;
-}
+
 .btn-strike{
   width:100%;
   height:56px;
@@ -79,6 +75,17 @@ body{
   background:#444;
   color:#aaa;
 }
+
+.btn-coin{
+  width:100%;
+  height:52px;
+  border-radius:14px;
+  margin-top:14px;
+  background:transparent;
+  border:2px solid var(--coin);
+  color:var(--coin);
+  font-weight:600;
+}
 </style>
 </head>
 
@@ -90,12 +97,14 @@ body{
     <div class="streak-number" id="streak">1</div>
     <div class="streak-label">DAYS STREAK</div>
   </div>
-  <div class="subtitle">Complete today’s focus ritual to grow your streak</div>
+
   <button class="btn-strike" id="strikeBtn">STRIKE</button>
+  <button class="btn-coin" onclick="getCoin(10)">GET COIN</button>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<script src="Coin/get-coin.js"></script>
+<script src="https://sparrow-tech06.github.io/Figgy/coin/get-coin.js"></script>
 
 <script>
 const streakEl = document.getElementById("streak");
@@ -107,7 +116,6 @@ const lastDate = localStorage.getItem("strikeDate");
 let streak = parseInt(localStorage.getItem("strikeCount")) || 1;
 streakEl.innerText = streak;
 
-// already struck today
 if(lastDate === today){
   btn.disabled = true;
   btn.innerText = "Come back tomorrow";
@@ -122,18 +130,16 @@ btn.onclick = () => {
   btn.disabled = true;
   btn.innerText = "Come back tomorrow";
 
-  // 🎉 confetti
   confetti({
     particleCount:160,
     spread:90,
     origin:{ y:0.6 }
   });
 
-  // 💰 reward
+  // reward callback
   getCoin(10);
 };
 </script>
 
 </body>
 </html>
-
