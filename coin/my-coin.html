@@ -36,11 +36,25 @@ body{
 <div class="box">
   <div class="count" id="coinCount">0</div>
   <div>MY COINS</div>
+
+  <ul id="history"></ul>
 </div>
 
 <script>
-document.getElementById("coinCount").innerText =
-  localStorage.getItem("myCoins") || 0;
+const coins = localStorage.getItem("myCoins") || 0;
+document.getElementById("coinCount").innerText = coins + " COINS";
+
+const history = JSON.parse(localStorage.getItem("coinHistory")) || [];
+const list = document.getElementById("history");
+
+history.forEach(item => {
+  const li = document.createElement("li");
+  li.innerHTML = `
+    +${item.amount} • ${item.source}<br>
+    <small>${item.date}</small>
+  `;
+  list.appendChild(li);
+});
 </script>
 
 </body>
