@@ -16,8 +16,8 @@ function getCoin(amount = 0, source = "Unknown") {
 
   localStorage.setItem("coinHistory", JSON.stringify(history));
 
-  // 👉 Android Toast callback
-  if (window.Android && typeof Android.showToast === "function") {
-    Android.showToast("Coin added successfully");
+  // 👉 only notify Android
+  if (window.Android && typeof Android.onCoinAdded === "function") {
+    Android.onCoinAdded();
   }
 }
