@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>My Coins</title>
 
 <!-- Bootstrap -->
@@ -25,6 +24,7 @@ body{
   font-family:system-ui;
 }
 
+/* Layout */
 .page{
   min-height:100vh;
   display:flex;
@@ -34,7 +34,7 @@ body{
 /* Header */
 header{
   background:var(--card);
-  padding:22px 16px 20px;
+  padding:24px 16px 18px;
   text-align:center;
   position:sticky;
   top:0;
@@ -44,11 +44,12 @@ header{
 
 .back-btn{
   position:absolute;
-  left:14px;
+  left:16px;
   top:22px;
-  font-size:18px;
+  background:none;
+  border:none;
   color:#fff;
-  text-decoration:none;
+  font-size:22px;
 }
 
 .coin-icon{
@@ -60,7 +61,6 @@ header{
 .coin-count{
   font-size:44px;
   font-weight:800;
-  margin-top:6px;
 }
 
 .coin-label{
@@ -69,7 +69,7 @@ header{
   color:var(--soft);
 }
 
-/* Content */
+/* Main */
 main{
   flex:1;
   padding:14px;
@@ -89,27 +89,19 @@ main{
   font-size:11px;
 }
 
-/* Skeleton loader */
+/* Skeleton */
 .skeleton{
-  background:linear-gradient(
-    90deg,
-    #1a1d23 25%,
-    #222632 37%,
-    #1a1d23 63%
-  );
-  background-size:400% 100%;
-  animation:shimmer 1.4s ease infinite;
-}
-
-@keyframes shimmer{
-  0%{background-position:100% 0}
-  100%{background-position:0 0}
-}
-
-.skeleton-item{
-  height:56px;
+  background:linear-gradient(90deg,#1a1d23,#232734,#1a1d23);
+  background-size:200% 100%;
+  animation:skeleton 1.2s infinite;
   border-radius:14px;
+  height:58px;
   margin-bottom:10px;
+}
+
+@keyframes skeleton{
+  0%{background-position:0%}
+  100%{background-position:200%}
 }
 
 /* Empty */
@@ -128,9 +120,9 @@ main{
 
   <!-- Header -->
   <header>
-    <a href="index.html" class="back-btn">
+    <button class="back-btn" onclick="window.history.back()">
       <i class="bi bi-arrow-left"></i>
-    </a>
+    </button>
 
     <i class="bi bi-coin coin-icon"></i>
     <div class="coin-count" id="coinCount">0</div>
@@ -139,15 +131,10 @@ main{
 
   <!-- History -->
   <main id="history">
-
     <!-- Skeleton loader -->
-    <section id="skeleton">
-      <div class="skeleton skeleton-item"></div>
-      <div class="skeleton skeleton-item"></div>
-      <div class="skeleton skeleton-item"></div>
-      <div class="skeleton skeleton-item"></div>
-    </section>
-
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
   </main>
 
 </div>
@@ -155,22 +142,21 @@ main{
 <script>
 const coinCountEl = document.getElementById("coinCount");
 const historyBox = document.getElementById("history");
-const skeleton = document.getElementById("skeleton");
 
-/* Load wallet data */
+coinCountEl.innerText = localStorage.getItem("myCoins") || 0;
+
+// Simulate loading (good for UX)
 setTimeout(() => {
-  const coins = localStorage.getItem("myCoins") || 0;
   const historyData = JSON.parse(localStorage.getItem("coinHistory")) || [];
-
-  coinCountEl.innerText = coins;
-  skeleton.remove();
+  historyBox.innerHTML = "";
 
   if(!historyData.length){
-    historyBox.innerHTML = `<div class="empty">No coin history yet</div>`;
+    historyBox.innerHTML = `<div class="empty">No coin history available</div>`;
     return;
   }
 
-  historyData.reverse().forEach(item => {
+  // Latest on top
+  historyData.slice().reverse().forEach(item => {
     const article = document.createElement("article");
     article.className = "history-item";
     article.innerHTML = `
@@ -180,8 +166,7 @@ setTimeout(() => {
     historyBox.appendChild(article);
   });
 
-}, 600); // skeleton duration
-
+}, 700);
 </script>
 
 </body>
