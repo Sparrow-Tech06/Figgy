@@ -7,95 +7,176 @@
 
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
+:root{
+  --bg:#0f1115;
+  --card:#1a1d23;
+  --soft:#9aa0aa;
+  --accent:#ffd54f;
+}
+
 body{
-  background:#0f1115;
+  background:var(--bg);
   color:#fff;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  margin:0;
   font-family:system-ui;
 }
 
-.card{
-  background:#1a1d23;
-  border:none;
-  border-radius:18px;
-  width:320px;
+/* Layout */
+.page{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* Header */
+header{
+  background:var(--card);
+  padding:24px 16px 20px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:10;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.coin-icon{
+  font-size:32px;
+  color:var(--accent);
+  filter:drop-shadow(0 0 6px rgba(255,213,79,.4));
 }
 
 .coin-count{
-  font-size:44px;
+  font-size:46px;
   font-weight:800;
-  letter-spacing:1px;
+  margin-top:6px;
 }
 
 .coin-label{
-  font-size:13px;
+  font-size:12px;
   letter-spacing:2px;
-  color:#9aa0aa;
+  color:var(--soft);
 }
 
-.history-list{
-  max-height:220px;
+/* Filters */
+.filters{
+  display:flex;
+  gap:8px;
+  padding:12px;
+}
+
+.filters button{
+  flex:1;
+  background:var(--card);
+  border:none;
+  color:#fff;
+  padding:8px 0;
+  border-radius:10px;
+  font-size:13px;
+}
+
+.filters button.active{
+  background:#2a2f38;
+  color:var(--accent);
+}
+
+/* Content */
+main{
+  flex:1;
+  padding:12px;
   overflow-y:auto;
 }
 
+/* History item */
 .history-item{
-  background:#111319;
-  border-radius:12px;
-  padding:10px 12px;
-  margin-bottom:8px;
+  background:var(--card);
+  border-radius:14px;
+  padding:12px 14px;
+  margin-bottom:10px;
 }
 
 .history-item small{
-  color:#8a8f99;
+  color:var(--soft);
   font-size:11px;
+}
+
+/* Empty state */
+.empty{
+  text-align:center;
+  color:var(--soft);
+  font-size:13px;
+  margin-top:40px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="card p-4 text-center">
-  
-  <!-- Coin Display -->
-  <div class="mb-3">
+<div class="page">
+
+  <!-- Wallet Header -->
+  <header>
+    <i class="bi bi-coin coin-icon"></i>
     <div class="coin-count" id="coinCount">0</div>
     <div class="coin-label">MY COINS</div>
-  </div>
+  </header>
 
-  <!-- Divider -->
-  <hr class="border-secondary opacity-25">
+  <!-- Filters -->
+  <section class="filters">
+    <button class="active" onclick="filterHistory('all')">All</button>
+    <button onclick="filterHistory('earn')">Earned</button>
+    <button onclick="filterHistory('bonus')">Bonus</button>
+  </section>
 
   <!-- History -->
-  <div class="text-start history-list" id="history">
-    <div class="text-center text-secondary small">No history available</div>
-  </div>
+  <main id="history">
+    <div class="empty">No coin history available</div>
+  </main>
 
 </div>
 
 <script>
-const coins = localStorage.getItem("myCoins") || 0;
-document.getElementById("coinCount").innerText = coins;
-
-const historyData = JSON.parse(localStorage.getItem("coinHistory")) || [];
+const coinCountEl = document.getElementById("coinCount");
 const historyBox = document.getElementById("history");
 
-if(historyData.length){
+let coins = localStorage.getItem("myCoins") || 0;
+let historyData = JSON.parse(localStorage.getItem("coinHistory")) || [];
+
+coinCountEl.innerText = coins;
+
+function renderHistory(type="all"){
   historyBox.innerHTML = "";
-  historyData.reverse().forEach(item => {
-    const div = document.createElement("div");
-    div.className = "history-item";
-    div.innerHTML = `
+
+  let filtered = historyData.filter(item=>{
+    if(type==="all") return true;
+    return item.type === type;
+  });
+
+  if(!filtered.length){
+    historyBox.innerHTML = `<div class="empty">No records found</div>`;
+    return;
+  }
+
+  filtered.reverse().forEach(item=>{
+    const article = document.createElement("article");
+    article.className = "history-item";
+    article.innerHTML = `
       <strong class="text-success">+${item.amount} Coins</strong><br>
       <small>${item.source} • ${item.date}</small>
     `;
-    historyBox.appendChild(div);
+    historyBox.appendChild(article);
   });
 }
+
+function filterHistory(type){
+  document.querySelectorAll(".filters button").forEach(btn=>btn.classList.remove("active"));
+  event.target.classList.add("active");
+  renderHistory(type);
+}
+
+renderHistory();
 </script>
 
 </body>
