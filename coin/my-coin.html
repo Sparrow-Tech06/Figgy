@@ -145,18 +145,21 @@ const historyBox = document.getElementById("history");
 
 coinCountEl.innerText = localStorage.getItem("myCoins") || 0;
 
-// Simulate loading (good for UX)
+// Skeleton delay
 setTimeout(() => {
+
   const historyData = JSON.parse(localStorage.getItem("coinHistory")) || [];
   historyBox.innerHTML = "";
 
-  if(!historyData.length){
+  if(historyData.length === 0){
     historyBox.innerHTML = `<div class="empty">No coin history available</div>`;
     return;
   }
 
-  // Latest on top
-  historyData.slice().reverse().forEach(item => {
+  // 🔥 LATEST FIRST (guaranteed)
+  for(let i = historyData.length - 1; i >= 0; i--){
+    const item = historyData[i];
+
     const article = document.createElement("article");
     article.className = "history-item";
     article.innerHTML = `
@@ -164,7 +167,7 @@ setTimeout(() => {
       <small>${item.source} • ${item.date}</small>
     `;
     historyBox.appendChild(article);
-  });
+  }
 
 }, 700);
 </script>
