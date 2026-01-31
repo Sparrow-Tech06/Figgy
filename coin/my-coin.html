@@ -12,9 +12,10 @@
 <style>
 :root{
   --bg:#0f1115;
-  --card:#1a1d23;
+  --card:#1d2129;
   --soft:#9aa0aa;
   --accent:#ffd54f;
+  --border:#2f3750;
 }
 
 body{
@@ -39,7 +40,7 @@ header{
   position:sticky;
   top:0;
   z-index:10;
-  border-bottom:1px solid rgba(255,255,255,.06);
+  border-bottom:1px solid var(--border);
 }
 
 .back-btn{
@@ -50,6 +51,7 @@ header{
   border:none;
   color:#fff;
   font-size:22px;
+  border:1px solid var(--border);
 }
 
 .coin-icon{
