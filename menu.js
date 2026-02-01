@@ -1,90 +1,103 @@
-// menu.js (ROOT)
+// menu.js
 document.addEventListener("DOMContentLoaded", () => {
-
-  // ---------- URL Data ----------
   const params = new URLSearchParams(location.search);
   const gameKey = params.get("game") || "default";
-  const title = params.get("title") || "Game";
-  const subtitle = params.get("subtitle") || "";
+  const title   = params.get("title") || "Game";
+  const subtitle= params.get("subtitle") || "";
 
-  // ---------- Inject Menu ----------
-  document.body.insertAdjacentHTML("beforeend", `
-    <div id="menuOverlay">
-      <div class="menuBox">
-        <h3>${title}</h3>
-        <p>${subtitle}</p>
-        <div id="timer">00:00</div>
+  // Inject menu overlay
+  const html = `
+  <div id="menuOverlay">
+    <div class="menuBox">
+      <h1>${title}</h1>
+      <p>${subtitle}</p>
 
-        <button onclick="toggleSound()" id="soundBtn">🔊 Sound</button>
-        <button onclick="restartGame()">🔄 Restart</button>
-        <button onclick="goHome()">🏠 Home</button>
+      <div class="opt">
+        <span>⏱ Enable Timer</span>
+        <input type="checkbox" id="mTimer" checked>
       </div>
+
+      <div class="opt">
+        <span>🔊 Sound</span>
+        <input type="checkbox" id="mSound" checked>
+      </div>
+
+      <button id="mStart">Start Game</button>
     </div>
+  </div>
+  `;
 
-    <button id="menuBtn" onclick="openMenu()">☰</button>
-  `);
+  document.body.insertAdjacentHTML("beforeend", html);
 
-  // ---------- Style ----------
-  const style = document.createElement("style");
-  style.innerHTML = `
-    #menuBtn{
-      position:fixed;
-      top:10px;
-      right:10px;
-      z-index:999;
-      padding:8px 12px;
-    }
+  // CSS
+  const css = document.createElement("style");
+  css.innerHTML = `
     #menuOverlay{
       position:fixed;
       inset:0;
       background:rgba(0,0,0,.6);
-      display:none;
-      align-items:center;
+      display:flex;
       justify-content:center;
-      z-index:1000;
+      align-items:center;
+      z-index:9999;
+      animation:fade .3s ease;
     }
     .menuBox{
       background:#fff;
+      width:90%;
+      max-width:320px;
       padding:20px;
-      border-radius:12px;
+      border-radius:14px;
       text-align:center;
-      width:85%;
-      max-width:300px;
     }
-    #timer{
-      font-size:24px;
+    .opt{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border:1px solid #e6e8ef;
+      padding:10px;
+      border-radius:12px;
       margin:10px 0;
     }
+    #mStart{
+      margin-top:14px;
+      padding:14px;
+      width:100%;
+      border:none;
+      background:#4f46e5;
+      color:#fff;
+      border-radius:12px;
+      font-weight:600;
+    }
+    @keyframes fade{
+      from{opacity:0;transform:translateY(10px)}
+      to{opacity:1}
+    }
   `;
-  document.head.appendChild(style);
+  document.head.appendChild(css);
 
-  // ---------- Howler ----------
-  window.gameSound = new Howl({
+  // Howler sound
+  const clickSound = new Howl({
     src:[`../assets/sound/${gameKey}.mp3`],
+    loop:true,
     volume:1
   });
-
   let soundOn = true;
+  clickSound.play();
 
-  window.toggleSound = () => {
-    soundOn = !soundOn;
-    gameSound.mute(!soundOn);
-    document.getElementById("soundBtn").innerText =
-      soundOn ? "🔊 Sound" : "🔇 Muted";
+  const mStart = document.getElementById("mStart");
+  const mTimer = document.getElementById("mTimer");
+  const mSound = document.getElementById("mSound");
+
+  mSound.addEventListener("change",()=>{
+    soundOn = mSound.checked;
+    clickSound.mute(!soundOn);
+  });
+
+  mStart.onclick = ()=>{
+    localStorage.setItem('timerOn', mTimer.checked ? '1':'0');
+    localStorage.setItem('soundOn', mSound.checked ? '1':'0');
+    document.getElementById("menuOverlay").remove();
   };
-
-  // ---------- Timer ----------
-  let sec = 0;
-  setInterval(()=>{
-    sec++;
-    timer.innerText =
-      String(Math.floor(sec/60)).padStart(2,"0") + ":" +
-      String(sec%60).padStart(2,"0");
-  },1000);
-
-  // ---------- Global ----------
-  window.openMenu = () => menuOverlay.style.display="flex";
-  window.goHome = () => location.href="../index.html";
-  window.restartGame = () => location.reload();
-
 });
+
