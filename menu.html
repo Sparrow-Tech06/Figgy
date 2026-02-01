@@ -48,8 +48,13 @@ body{
       <label class="form-check-label">Sound On</label>
     </div>
 
-    <button class="btn btn-primary w-100 mb-2" onclick="startGame()">Start Game</button>
-    <button class="btn btn-outline-secondary w-100" onclick="history.back()">Back</button>
+    <button class="btn btn-primary w-100 mb-2" onclick="handleStart()">
+      Start Game
+    </button>
+
+    <button class="btn btn-outline-secondary w-100" onclick="handleBack()">
+      Back
+    </button>
   </div>
 </div>
 
@@ -70,28 +75,44 @@ const gameConfig = {
   }
 };
 
-// set UI
-document.getElementById('gameTitle').innerText = gameConfig[gameKey].title;
-document.getElementById('gameSub').innerText   = gameConfig[gameKey].sub;
+// set UI safely
+if(gameConfig[gameKey]){
+  gameTitle.innerText = gameConfig[gameKey].title;
+  gameSub.innerText   = gameConfig[gameKey].sub;
+}
 
 // click sound
 const clickSound = new Howl({
-  src:['assets/sound/click.mp3'], 
-  volume: 0.5,
-  html5: true
+  src:['assets/sound/click.mp3'],
+  volume:0.5,
+  html5:true
 });
 
-function startGame(){
+/* PLAY CLICK SOUND SAFELY */
+function playClick(){
+  if(!soundToggle.checked) return;
+
+  clickSound.stop();   // 🔴 important
   clickSound.play();
+}
 
-  localStorage.setItem('timerOn',
-    document.getElementById('timerToggle').checked ? '1':'0'
-  );
-  localStorage.setItem('soundOn',
-    document.getElementById('soundToggle').checked ? '1':'0'
-  );
+/* START GAME */
+function handleStart(){
+  playClick();
 
-  location.href = gameConfig[gameKey].url;
+  localStorage.setItem('timerOn', timerToggle.checked ? '1':'0');
+  localStorage.setItem('soundOn', soundToggle.checked ? '1':'0');
+
+  // 🔴 delay navigation so sound always plays
+  setTimeout(()=>{
+    location.href = gameConfig[gameKey].url;
+  }, 180);
+}
+
+/* BACK */
+function handleBack(){
+  playClick();
+  setTimeout(()=>history.back(), 150);
 }
 </script>
 
