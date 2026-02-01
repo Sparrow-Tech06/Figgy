@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -57,8 +57,9 @@ body{
 <div class="menu">
 
   <div class="top">
-    <button class="btn-icon" onclick="window.history.back()">←</button>
-    <button class="btn-icon" onclick="alert('Select settings then start game')">
+    <button class="btn-icon" onclick="playClick(); window.history.back()">←</button>
+
+    <button class="btn-icon" onclick="playClick(); alert('Select settings then start game')">
       How to Play
     </button>
   </div>
@@ -68,18 +69,18 @@ body{
     <p class="text-secondary">Configure before start</p>
 
     <div class="card p-3 mt-3">
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between align-items-center">
         <span>⏱ Timer</span>
         <input type="checkbox" id="timerToggle" checked>
       </div>
       <hr>
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between align-items-center">
         <span>🔊 Sound</span>
         <input type="checkbox" id="soundToggle" checked>
       </div>
     </div>
 
-    <button class="start mt-4" onclick="startGame()">START GAME</button>
+    <button class="start mt-4" onclick="playClick(); startGame()">START GAME</button>
   </div>
 
 </div>
@@ -95,21 +96,28 @@ const gameMap = {
   logic: 'games/sprint.html'
 };
 
+/* CLICK SOUND */
 const clickSound = new Howl({
-  src:['assets/sound/click.mp3'],
-  volume:0.5
+  src: ['assets/sound/click.mp3'],
+  volume: 0.5,
+  html5: true
 });
 
+/* PLAY SOUND EVERY TIME */
+function playClick(){
+  if(!soundToggle.checked) return;
+
+  clickSound.stop();   // reset sound
+  clickSound.play();  // play again
+}
+
 function startGame(){
-  const timerOn = timerToggle.checked;
-  const soundOn = soundToggle.checked;
+  localStorage.setItem('timerOn', timerToggle.checked);
+  localStorage.setItem('soundOn', soundToggle.checked);
 
-  localStorage.setItem('timerOn', timerOn);
-  localStorage.setItem('soundOn', soundOn);
-
-  if(soundOn) clickSound.play();
-
-  location.href = gameMap[game];
+  setTimeout(()=>{
+    location.href = gameMap[game];
+  }, 150); // sound finish delay
 }
 </script>
 </body>
