@@ -16,9 +16,19 @@
   --muted:#6c757d;
   --border:#e6e8ef;
   --primary:#4f46e5;
-  --radius:18px;
+  --radius:14px;
 }
-
+@media (prefers-color-scheme: dark) {
+  :root{
+  --bg:#0f1115;
+  --card:#1d2129;
+  --text:#9a9a9a;
+  --muted:#9a9a9a;
+  --border:#2f3750;
+  --primary:#4f46e5;
+  --radius:14px;
+  }
+}
 body{
   margin:0;
   background:var(--bg);
