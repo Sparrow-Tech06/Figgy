@@ -200,7 +200,7 @@ function handleStart(){
   localStorage.setItem('soundOn', soundToggle.checked ? '1':'0');
 
   setTimeout(()=>{
-    location.href = gameConfig[gameKey].url;
+    location.replace(gameConfig[gameKey].url);
   },180);
 }
 
