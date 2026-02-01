@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -13,7 +13,7 @@ body{
   margin:0;
   background:#0e0f13;
   color:#fff;
-  font-family:system-ui,sans-serif;
+  font-family:system-ui;
 }
 .menu{
   min-height:100vh;
@@ -38,19 +38,6 @@ body{
   flex-direction:column;
   justify-content:center;
 }
-.badge{
-  background:#1f2433;
-  color:#f2a93b;
-  padding:6px 12px;
-  border-radius:20px;
-  width:max-content;
-  font-size:12px;
-}
-h1{
-  font-size:52px;
-  font-weight:800;
-  line-height:1;
-}
 .card{
   background:#151821;
   border:1px solid #1f2433;
@@ -60,8 +47,8 @@ h1{
   background:#f2a93b;
   border:none;
   padding:16px;
-  font-weight:700;
   border-radius:16px;
+  font-weight:700;
 }
 </style>
 </head>
@@ -69,21 +56,18 @@ h1{
 <body>
 <div class="menu">
 
-  <!-- TOP -->
   <div class="top">
     <button class="btn-icon" onclick="window.history.back()">←</button>
-    <button class="btn-icon" onclick="alert('Solve questions as fast as possible')">
+    <button class="btn-icon" onclick="alert('Select settings then start game')">
       How to Play
     </button>
   </div>
 
-  <!-- CENTER -->
   <div class="center">
-    <span class="badge mb-3">MATH · 1 MIN</span>
-    <h1>SPRINT<br>DUELS</h1>
-    <p class="text-secondary">Fast thinking challenge</p>
+    <h1 class="mb-2">GAME MENU</h1>
+    <p class="text-secondary">Configure before start</p>
 
-    <div class="card p-3 mt-4">
+    <div class="card p-3 mt-3">
       <div class="d-flex justify-content-between">
         <span>⏱ Timer</span>
         <input type="checkbox" id="timerToggle" checked>
@@ -101,24 +85,33 @@ h1{
 </div>
 
 <script>
-/* CLICK SOUND */
+const params = new URLSearchParams(location.search);
+const game = params.get('game');
+
+/* GAME MAP */
+const gameMap = {
+  sprint: 'games/sprint.html',
+  puzzle: 'games/puzzle.html',
+  logic: 'games/sprint.html'
+};
+
 const clickSound = new Howl({
   src:['assets/sound/click.mp3'],
   volume:0.5
 });
 
 function startGame(){
-  const timerOn = document.getElementById('timerToggle').checked;
-  const soundOn = document.getElementById('soundToggle').checked;
+  const timerOn = timerToggle.checked;
+  const soundOn = soundToggle.checked;
 
   localStorage.setItem('timerOn', timerOn);
   localStorage.setItem('soundOn', soundOn);
 
   if(soundOn) clickSound.play();
 
-  /* 👇 GAME URL CHANGE HERE */
-  location.href = 'games/sprint.html';
+  location.href = gameMap[game];
 }
 </script>
 </body>
-      </html>
+</html>
+
