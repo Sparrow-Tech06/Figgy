@@ -48,6 +48,16 @@ document.addEventListener("DOMContentLoaded", () => {
       padding:20px;
       border-radius:14px;
       text-align:center;
+      box-shadow:0 10px 25px rgba(0,0,0,0.1);
+    }
+    .menuBox h1{
+      font-size:22px;
+      margin-bottom:6px;
+    }
+    .menuBox p{
+      font-size:14px;
+      color:#555;
+      margin-bottom:16px;
     }
     .opt{
       display:flex;
@@ -67,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
       color:#fff;
       border-radius:12px;
       font-weight:600;
+      font-size:16px;
     }
     @keyframes fade{
       from{opacity:0;transform:translateY(10px)}
