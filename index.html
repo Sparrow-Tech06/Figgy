@@ -53,6 +53,8 @@ content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,vie
   --radius-sm:14px;
   --border:#e3e6ea;
   --invite: #f0f3ff ;
+  --sk-base: #e6e8eb;
+  --sk-mid:  #f2f3f5;
 }
 @media (prefers-color-scheme: dark) {
 :root{
@@ -67,6 +69,8 @@ content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,vie
   --radius:18px;
   --radius-sm:14px;
   --border:#2f3750;
+  --sk-base: #1f2430;
+  --sk-mid:  #2a3140;
   }
 }
 
@@ -187,14 +191,19 @@ section{padding:16px}
 
 /* ================= SKELETON ================= */
 .img-skeleton{
-  background:linear-gradient(90deg,#1f2430,#2a3140,#1f2430);
-  background-size:200% 100%;
-  animation:shimmer 1.2s infinite;
+  background: linear-gradient( 90deg, var(--sk-base) 25%, var(--sk-mid) 37%, var(--sk-base) 63% );
+  background-size: 400% 100%;
+  animation: skeleton-loading var(--sk-speed) ease-in-out infinite;
 }
 
-@keyframes shimmer{
-  0%{background-position:200%}
-  100%{background-position:-200%}
+/* Animation */
+@keyframes skeleton-loading{
+  0%{
+    background-position: 100% 0;
+  }
+  100%{
+    background-position: 0 0;
+  }
 }
 
 .challenge-skeleton{height:60px}
