@@ -1,133 +1,257 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Puzzle Pattern Game</title>  <!-- Bootstrap CSS -->  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">  <style>
-    body{
-      background:#0e0f13;
-      color:#fff;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-    }
-    .app{
-      max-width:660px;
-      margin:auto;
-      min-height:100vh;
-    }
-    header{
-      background:#151821;
-      padding:12px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      position:sticky;
-      top:0;
-      z-index:10;
-    }
-    header h1{font-size:18px;margin:0;}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sprint Duels</title>
 
-    .card-dark{
-      background:#151821;
-      border-radius:16px;
-      border:1px solid #1f2433;
-    }
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    .pattern-box{
-      font-size:22px;
-      letter-spacing:4px;
-      font-weight:600;
-    }
+<style>
+body{
+  margin:0;
+  background:#0e0f13;
+  color:#fff;
+  font-family:system-ui,sans-serif;
+}
 
-    .option{
-      background:#0e111b;
-      border:1px solid #252a3d;
-      border-radius:14px;
-      padding:12px;
-      text-align:center;
-      cursor:pointer;
-      transition:.2s;
-      font-size:18px;
-    }
-    .option:hover{background:#1b2030;}
-    .correct{background:#0f5132;border-color:#198754;}
-    .wrong{background:#842029;border-color:#dc3545;}
-  </style></head>
+/* ===== MENU OVERLAY ===== */
+#menuOverlay{
+  position:fixed;
+  inset:0;
+  background:#0e0f13;
+  z-index:999;
+  padding:24px;
+  display:flex;
+  flex-direction:column;
+  animation:fadeIn .4s ease;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:none}
+}
+
+.menu-top{
+  display:flex;
+  justify-content:space-between;
+}
+.icon-btn{
+  background:#151821;
+  border:1px solid #1f2433;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:12px;
+}
+
+.menu-center{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.badge{
+  background:#1f2433;
+  color:#f2a93b;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:12px;
+  width:max-content;
+}
+
+.menu h1{
+  font-size:56px;
+  font-weight:800;
+  line-height:1;
+  margin:16px 0 8px;
+}
+
+.subtitle{color:#9aa0b5}
+
+.menu-card{
+  background:#151821;
+  border:1px solid #1f2433;
+  border-radius:16px;
+  padding:14px;
+  margin:28px 0;
+}
+
+.start-btn{
+  width:100%;
+  background:#f2a93b;
+  border:none;
+  padding:16px;
+  font-weight:700;
+  border-radius:16px;
+}
+
+/* ===== GAME UI ===== */
+#gameUI{
+  display:none;
+  animation:fadeIn .4s ease;
+}
+
+.card-dark{
+  background:#151821;
+  border:1px solid #1f2433;
+  border-radius:16px;
+}
+
+.option{
+  background:#0e111b;
+  border:1px solid #252a3d;
+  border-radius:14px;
+  padding:14px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+}
+.option:hover{background:#1b2030}
+.correct{background:#0f5132}
+.wrong{background:#842029}
+</style>
+</head>
+
 <body>
-<div class="app">  <!-- Header -->  <header>
-    <i class="bi bi-arrow-left"></i>
-    <h1>Puzzle Pattern</h1>
-    <i class="bi bi-lightbulb"></i>
-  </header>  <!-- Game -->  <section class="p-3">
-    <div class="card-dark p-3"><div class="d-flex justify-content-between mb-2">
-    <span><i class="bi bi-stars text-warning"></i> Score: <b id="score">0</b></span>
-    <span><i class="bi bi-clock"></i> <span id="timer">40</span>s</span>
+
+<!-- ========== MENU OVERLAY ========== -->
+<div id="menuOverlay">
+
+  <div class="menu-top">
+    <button class="icon-btn" onclick="window.history.back()">←</button>
+    <button class="icon-btn" onclick="alert('Solve the pattern & choose the correct option')">
+      How to Play
+    </button>
   </div>
 
-  <div class="text-center my-4">
-    <div class="text-secondary mb-2">Find the missing pattern</div>
-    <div class="pattern-box" id="pattern">2 4 6 ?</div>
+  <div class="menu-center menu">
+    <span class="badge">MATH · 1 MIN DUEL</span>
+
+    <h1>SPRINT<br>DUELS</h1>
+    <p class="subtitle">Race to solve the most in 1 minute</p>
+
+    <div class="menu-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>⏱ Timer</span>
+        <input type="checkbox" id="timerToggle" checked>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startGame()">START DUEL</button>
   </div>
-
-  <div class="row g-3" id="options"></div>
-
 </div>
 
-  </section></div><script>
-  const patterns = [
-    { seq: [2,4,6,'?'], answer: 8, options: [8,10,6,12] },
-    { seq: [1,4,9,'?'], answer: 16, options: [12,16,18,25] },
-    { seq: [3,6,12,'?'], answer: 24, options: [18,20,24,30] },
-    { seq: [5,10,20,'?'], answer: 40, options: [30,35,40,50] },
-    { seq: [2,6,12,'?'], answer: 20, options: [18,20,24,30] }
-  ];
+<!-- ========== GAME UI ========== -->
+<div id="gameUI" class="container py-3">
 
-  const patternEl = document.getElementById('pattern');
-  const optionsEl = document.getElementById('options');
-  const scoreEl = document.getElementById('score');
-  const timerEl = document.getElementById('timer');
+  <div class="card-dark p-3 mb-3">
+    <div class="d-flex justify-content-between">
+      <span>Score: <b id="score">0</b></span>
+      <span id="timerBox">Time: <b id="timer">40</b>s</span>
+    </div>
+    <div class="text-secondary mt-1" id="progressText">1 / 10</div>
+  </div>
 
-  let score = 0;
-  let time = 40;
-  let current;
+  <div class="card-dark p-3">
+    <div class="text-center mb-3">
+      <h4 id="pattern"></h4>
+    </div>
 
-  function loadPattern(){
-    current = patterns[Math.floor(Math.random()*patterns.length)];
-    patternEl.textContent = current.seq.join(' ');
-    optionsEl.innerHTML = '';
+    <div class="row g-3" id="options"></div>
 
-    current.options.sort(()=>Math.random()-0.5).forEach(val=>{
-      const col = document.createElement('div');
-      col.className = 'col-6';
-      col.innerHTML = `<div class="option">${val}</div>`;
-      col.onclick = ()=>check(col.firstChild,val);
-      optionsEl.appendChild(col);
-    });
+    <!-- SUBMIT ONLY FOR NO-TIMER MODE -->
+    <button id="submitBtn"
+      class="btn btn-outline-danger w-100 mt-3"
+      onclick="endGame()">
+      Submit & End
+    </button>
+  </div>
+</div>
+
+<script>
+/* ===== DATA ===== */
+const patterns=[
+ {s:[2,4,6,'?'],a:8,o:[6,8,10,12]},
+ {s:[1,4,9,'?'],a:16,o:[12,16,18,25]},
+ {s:[3,6,12,'?'],a:24,o:[18,20,24,30]}
+];
+
+let timerOn=true;
+let score=0,index=0;
+const total=10;
+let timerInterval;
+
+/* ===== START GAME ===== */
+function startGame(){
+  timerOn=document.getElementById('timerToggle').checked;
+
+  document.getElementById('menuOverlay').style.display='none';
+  document.getElementById('gameUI').style.display='block';
+
+  document.getElementById('submitBtn').style.display =
+    timerOn ? 'none' : 'block';
+
+  if(timerOn) startTimer();
+  else document.getElementById('timerBox').style.display='none';
+
+  loadQuestion();
+}
+
+/* ===== GAME ===== */
+function loadQuestion(){
+  if(index>=total){
+    endGame(); // 🔥 FIXED BUG
+    return;
   }
 
-  function check(el,val){
-    if(val === current.answer){
-      el.classList.add('correct');
-      score++;
-      scoreEl.textContent = score;
-    }else{
-      el.classList.add('wrong');
-    }
-    setTimeout(loadPattern,700);
-  }
+  const p=patterns[Math.floor(Math.random()*patterns.length)];
+  document.getElementById('pattern').textContent=p.s.join(' ');
+  document.getElementById('progressText').textContent=`${index+1} / ${total}`;
 
-  function startTimer(){
-    const t = setInterval(()=>{
-      time--;
-      timerEl.textContent = time;
-      if(time<=0){
-        clearInterval(t);
-        alert('Time Up! Your Score: '+score);
+  const box=document.getElementById('options');
+  box.innerHTML='';
+
+  p.o.sort(()=>Math.random()-0.5).forEach(v=>{
+    const c=document.createElement('div');
+    c.className='col-6';
+    c.innerHTML=`<div class="option">${v}</div>`;
+    c.onclick=()=>{
+      if(v===p.a){
+        score++;
+        c.firstChild.classList.add('correct');
+      }else{
+        c.firstChild.classList.add('wrong');
       }
-    },1000);
-  }
+      document.getElementById('score').textContent=score;
+      index++;
+      setTimeout(loadQuestion,500);
+    };
+    box.appendChild(c);
+  });
+}
 
-  loadPattern();
-  startTimer();
-</script></body>
+/* ===== TIMER ===== */
+function startTimer(){
+  let t=40;
+  timerInterval=setInterval(()=>{
+    t--;
+    document.getElementById('timer').textContent=t;
+    if(t<=0){
+      clearInterval(timerInterval);
+      endGame();
+    }
+  },1000);
+}
+
+/* ===== END GAME ===== */
+function endGame(){
+  clearInterval(timerInterval);
+  localStorage.setItem('gameResult',JSON.stringify({
+    score,total,mode:timerOn?'Timer':'Practice'
+  }));
+  location.href='result.html';
+}
+</script>
+
+</body>
 </html>
