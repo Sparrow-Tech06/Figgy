@@ -9,53 +9,141 @@
 <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
 
 <style>
-body{
-  background:#f8f9fa;
+:root{
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --text:#1e1f24;
+  --muted:#6c757d;
+  --border:#e6e8ef;
+  --primary:#4f46e5;
+  --radius:18px;
 }
-.menu-wrap{
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+}
+
+/* ===== LAYOUT ===== */
+.page{
   min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ===== HEADER ===== */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 20px;
+}
+
+header a,
+header button{
+  background:transparent;
+  border:1px solid var(--border);
+  padding:8px 14px;
+  border-radius:12px;
+  font-size:14px;
+  color:var(--text);
+  text-decoration:none;
+}
+
+/* ===== MAIN ===== */
+main{
+  flex:1;
   display:flex;
   align-items:center;
   justify-content:center;
+  padding:20px;
 }
-.card{
+
+section{
   width:100%;
-  max-width:420px;
-  border-radius:16px;
-  animation:fadeIn .4s ease;
+  max-width:520px;
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:28px;
+  box-shadow:0 10px 30px rgba(0,0,0,.06);
+  animation:fade .35s ease;
 }
-@keyframes fadeIn{
-  from{opacity:0;transform:scale(.95)}
+
+@keyframes fade{
+  from{opacity:0;transform:translateY(10px)}
   to{opacity:1}
+}
+
+h1{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+p{
+  color:var(--muted);
+  margin-bottom:24px;
+}
+
+/* ===== OPTIONS ===== */
+.option{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 16px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  margin-bottom:14px;
+}
+
+/* ===== BUTTON ===== */
+.start-btn{
+  width:100%;
+  background:var(--primary);
+  border:none;
+  color:#fff;
+  padding:16px;
+  font-weight:600;
+  border-radius:16px;
+  margin-top:20px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="menu-wrap">
-  <div class="card shadow-sm p-4">
-    <h4 id="gameTitle" class="fw-bold mb-1"></h4>
-    <p id="gameSub" class="text-muted mb-4"></p>
+<div class="page">
 
-    <div class="form-check form-switch mb-3">
-      <input class="form-check-input" type="checkbox" id="timerToggle" checked>
-      <label class="form-check-label">Enable Timer</label>
-    </div>
+  <!-- HEADER -->
+  <header>
+    <button onclick="handleBack()">← Home</button>
+    <a href="#" onclick="handleHow()">How to Play</a>
+  </header>
 
-    <div class="form-check form-switch mb-4">
-      <input class="form-check-input" type="checkbox" id="soundToggle" checked>
-      <label class="form-check-label">Sound On</label>
-    </div>
+  <!-- MAIN -->
+  <main>
+    <section>
+      <h1 id="gameTitle"></h1>
+      <p id="gameSub"></p>
 
-    <button class="btn btn-primary w-100 mb-2" onclick="handleStart()">
-      Start Game
-    </button>
+      <div class="option">
+        <span>⏱ Enable Timer</span>
+        <input type="checkbox" id="timerToggle" class="form-check-input" checked>
+      </div>
 
-    <button class="btn btn-outline-secondary w-100" onclick="handleBack()">
-      Back
-    </button>
-  </div>
+      <div class="option">
+        <span>🔊 Sound</span>
+        <input type="checkbox" id="soundToggle" class="form-check-input" checked>
+      </div>
+
+      <button class="start-btn" onclick="handleStart()">
+        Start Game
+      </button>
+    </section>
+  </main>
+
 </div>
 
 <script>
@@ -65,57 +153,56 @@ const gameKey = params.get('game');
 const gameConfig = {
   sprint:{
     title:'Sprint Quiz',
-    sub:'Answer fast before time runs out',
+    sub:'Answer quickly before the timer ends',
     url:'games/sprint.html'
   },
   puzzle:{
     title:'Puzzle Game',
-    sub:'Solve smart image puzzles',
+    sub:'Solve smart visual challenges',
     url:'puzzle/pattern.html'
   }
 };
 
-// set UI safely
 if(gameConfig[gameKey]){
-  gameTitle.innerText = gameConfig[gameKey].title;
-  gameSub.innerText   = gameConfig[gameKey].sub;
+  gameTitle.textContent = gameConfig[gameKey].title;
+  gameSub.textContent   = gameConfig[gameKey].sub;
 }
 
-// click sound
+/* SOUND */
 const clickSound = new Howl({
   src:['assets/sound/click.mp3'],
-  volume:0.5,
+  volume:.5,
   html5:true
 });
 
-/* PLAY CLICK SOUND SAFELY */
 function playClick(){
   if(!soundToggle.checked) return;
-
-  clickSound.stop();   // 🔴 important
+  clickSound.stop();
   clickSound.play();
 }
 
-/* START GAME */
+/* ACTIONS */
 function handleStart(){
   playClick();
 
   localStorage.setItem('timerOn', timerToggle.checked ? '1':'0');
   localStorage.setItem('soundOn', soundToggle.checked ? '1':'0');
 
-  // 🔴 delay navigation so sound always plays
   setTimeout(()=>{
     location.href = gameConfig[gameKey].url;
-  }, 180);
+  },180);
 }
 
-/* BACK */
 function handleBack(){
   playClick();
-  setTimeout(()=>history.back(), 150);
+  setTimeout(()=>location.href='index.html',150);
+}
+
+function handleHow(){
+  playClick();
+  alert('Read instructions and then start the game.');
 }
 </script>
 
 </body>
 </html>
-
