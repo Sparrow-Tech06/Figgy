@@ -4,29 +4,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const title   = params.get("title") || "Game";
   const subtitle= params.get("subtitle") || "";
 
-  // Inject menu overlay
+  // Full viewport menu
   const html = `
   <div id="menuOverlay">
-    <div class="menuBox">
-      <div class="menuHeader" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <button id="backHome" style="background:none;border:none;font-weight:600;cursor:pointer;">⬅ Home</button>
-        <a href="../how-to-play.html" style="text-decoration:none;font-weight:600;">❓ How to Play</a>
+    <div class="menuContent">
+      <div class="menuHeader">
+        <button id="backHome">⬅ Home</button>
+        <a href="../how-to-play.html">❓ How to Play</a>
       </div>
 
-      <h1>${title}</h1>
-      <p>${subtitle}</p>
+      <div class="menuBody">
+        <h1>${title}</h1>
+        <p>${subtitle}</p>
 
-      <div class="opt">
-        <span>⏱ Enable Timer</span>
-        <input type="checkbox" id="mTimer" checked>
+        <div class="opt">
+          <span>⏱ Enable Timer</span>
+          <input type="checkbox" id="mTimer" checked>
+        </div>
+
+        <div class="opt">
+          <span>🔊 Sound</span>
+          <input type="checkbox" id="mSound" checked>
+        </div>
+
+        <button id="mStart">Start Game</button>
       </div>
-
-      <div class="opt">
-        <span>🔊 Sound</span>
-        <input type="checkbox" id="mSound" checked>
-      </div>
-
-      <button id="mStart">Start Game</button>
     </div>
   </div>
   `;
@@ -38,56 +40,85 @@ document.addEventListener("DOMContentLoaded", () => {
     #menuOverlay{
       position:fixed;
       inset:0;
-      background: #fff;
-      display:flex;
-      justify-content:center;
-      align-items:center;
+      background:#fff;
       z-index:9999;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      align-items:stretch;
+      padding:16px;
       animation:fade .2s ease;
     }
-    .menuBox{
-      background:#fff;
-      width:90%;
-      max-width:320px;
-      padding:20px;
-      border-radius:14px;
-      text-align:center;
-      box-shadow:0 10px 25px rgba(0,0,0,0.1);
+
+    .menuContent{
+      display:flex;
+      flex-direction:column;
+      height:100vh;
+      width:100%;
     }
-    .menuBox h1{
-      font-size:22px;
-      margin-bottom:6px;
+
+    .menuHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:24px;
     }
-    .menuBox p{
-      font-size:14px;
+
+    .menuHeader button, .menuHeader a{
+      font-size:16px;
+      font-weight:600;
+      background:none;
+      border:none;
+      text-decoration:none;
+      color:#4f46e5;
+      cursor:pointer;
+    }
+
+    .menuBody{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:16px;
+    }
+
+    .menuBody h1{
+      font-size:28px;
+      margin:0;
+    }
+
+    .menuBody p{
+      font-size:16px;
       color:#555;
-      margin-bottom:16px;
+      margin:0;
     }
+
     .opt{
       display:flex;
       justify-content:space-between;
       align-items:center;
       border:1px solid #e6e8ef;
-      padding:10px;
-      border-radius:12px;
-      margin:10px 0;
+      padding:12px 16px;
+      border-radius:14px;
+      width:80%;
+      max-width:320px;
     }
+
     #mStart{
-      margin-top:14px;
+      margin-top:16px;
       padding:14px;
-      width:100%;
+      width:80%;
+      max-width:320px;
       border:none;
       background:#4f46e5;
       color:#fff;
-      border-radius:12px;
+      border-radius:14px;
       font-weight:600;
-      font-size:16px;
+      font-size:18px;
       cursor:pointer;
     }
-    #backHome{
-      font-size:14px;
-      color:#4f46e5;
-    }
+
     @keyframes fade{
       from{opacity:0;transform:translateY(10px)}
       to{opacity:1}
@@ -105,13 +136,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if(prevTimer !== null) mTimer.checked = prevTimer === '1';
   if(prevSound !== null) mSound.checked = prevSound === '1';
 
-  // Menu sound effect only if enabled
+  // Menu sound effect
   let clickSound = null;
   const initSound = () => {
-    if(clickSound){
-      clickSound.stop();
-      clickSound = null;
-    }
+    if(clickSound){ clickSound.stop(); clickSound=null; }
     if(mSound.checked){
       clickSound = new Howl({
         src:[`../assets/sound/${gameKey}.mp3`],
@@ -122,23 +150,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
   initSound();
-
   mSound.addEventListener("change", initSound);
 
   // Back to Home
   document.getElementById("backHome").onclick = ()=> window.history.back();
 
-  // Start button
-  const mStart = document.getElementById("mStart");
-  mStart.onclick = ()=>{
-    // Save settings immediately
-    localStorage.setItem('timerOn', mTimer.checked ? '1':'0');
-    localStorage.setItem('soundOn', mSound.checked ? '1':'0');
+  // Start game
+  document.getElementById("mStart").onclick = ()=>{
+    localStorage.setItem('timerOn', mTimer.checked?'1':'0');
+    localStorage.setItem('soundOn', mSound.checked?'1':'0');
 
-    // Remove overlay
     document.getElementById("menuOverlay").remove();
 
-    // Stop menu sound immediately
     if(clickSound) clickSound.stop();
   };
 });
