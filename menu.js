@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   </div>
   `;
-
   document.body.insertAdjacentHTML("beforeend", html);
 
   // CSS
@@ -35,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     #menuOverlay{
       position:fixed;
       inset:0;
-      background: #fff ;
+      background: #fff;
       display:flex;
       justify-content:center;
       align-items:center;
@@ -76,28 +75,54 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   document.head.appendChild(css);
 
-  // Howler sound
-  const clickSound = new Howl({
-    src:[`../assets/sound/${gameKey}.mp3`],
-    loop:true,
-    volume:1
-  });
-  let soundOn = true;
-  clickSound.play();
+  // Load previous settings
+  const prevTimer = localStorage.getItem('timerOn');
+  const prevSound = localStorage.getItem('soundOn');
 
-  const mStart = document.getElementById("mStart");
   const mTimer = document.getElementById("mTimer");
   const mSound = document.getElementById("mSound");
 
+  if(prevTimer !== null) mTimer.checked = prevTimer === '1';
+  if(prevSound !== null) mSound.checked = prevSound === '1';
+
+  // Sound effect only if checkbox enabled
+  let clickSound = null;
+  if(mSound.checked){
+    clickSound = new Howl({
+      src:[`../assets/sound/${gameKey}.mp3`],
+      loop:true,
+      volume:1
+    });
+    clickSound.play();
+  }
+
   mSound.addEventListener("change",()=>{
-    soundOn = mSound.checked;
-    clickSound.mute(!soundOn);
+    if(clickSound){
+      clickSound.stop();
+      clickSound = null;
+    }
+    if(mSound.checked){
+      clickSound = new Howl({
+        src:[`../assets/sound/${gameKey}.mp3`],
+        loop:true,
+        volume:1
+      });
+      clickSound.play();
+    }
   });
 
+  // Start button
+  const mStart = document.getElementById("mStart");
   mStart.onclick = ()=>{
+    // Save settings
     localStorage.setItem('timerOn', mTimer.checked ? '1':'0');
     localStorage.setItem('soundOn', mSound.checked ? '1':'0');
+
+    // Remove menu
     document.getElementById("menuOverlay").remove();
+
+    // Stop menu music
+    if(clickSound) clickSound.stop();
   };
 });
 
