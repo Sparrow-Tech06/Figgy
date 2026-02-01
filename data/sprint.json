@@ -7,7 +7,7 @@
         "title": "SPRINT DUELS",
         "desc": "Classic puzzle sprint – 1 minute",
         "image": "https://cdn-icons-png.flaticon.com/512/2103/2103652.png",
-        "link": "menu.html?game=sprint"
+        "link": "games/sprint.html?game=sprint&title=Sprint Challenge&subtitle=Speed Matters"
       },
       {
         "label": "PUZZLE",
