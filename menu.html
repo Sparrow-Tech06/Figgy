@@ -10,116 +10,89 @@
 
 <style>
 body{
-  margin:0;
-  background:#0e0f13;
-  color:#fff;
-  font-family:system-ui;
+  background:#f8f9fa;
 }
-.menu{
+.menu-wrap{
   min-height:100vh;
-  padding:24px;
   display:flex;
-  flex-direction:column;
-}
-.top{
-  display:flex;
-  justify-content:space-between;
-}
-.btn-icon{
-  background:#151821;
-  border:1px solid #1f2433;
-  color:#fff;
-  padding:10px 16px;
-  border-radius:12px;
-}
-.center{
-  flex:1;
-  display:flex;
-  flex-direction:column;
+  align-items:center;
   justify-content:center;
 }
 .card{
-  background:#151821;
-  border:1px solid #1f2433;
+  width:100%;
+  max-width:420px;
   border-radius:16px;
+  animation:fadeIn .4s ease;
 }
-.start{
-  background:#f2a93b;
-  border:none;
-  padding:16px;
-  border-radius:16px;
-  font-weight:700;
+@keyframes fadeIn{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1}
 }
 </style>
 </head>
 
 <body>
-<div class="menu">
 
-  <div class="top">
-    <button class="btn-icon" onclick="playClick(); window.history.back()">←</button>
+<div class="menu-wrap">
+  <div class="card shadow-sm p-4">
+    <h4 id="gameTitle" class="fw-bold mb-1"></h4>
+    <p id="gameSub" class="text-muted mb-4"></p>
 
-    <button class="btn-icon" onclick="playClick(); alert('Select settings then start game')">
-      How to Play
-    </button>
-  </div>
-
-  <div class="center">
-    <h1 class="mb-2">GAME MENU</h1>
-    <p class="text-secondary">Configure before start</p>
-
-    <div class="card p-3 mt-3">
-      <div class="d-flex justify-content-between align-items-center">
-        <span>⏱ Timer</span>
-        <input type="checkbox" id="timerToggle" checked>
-      </div>
-      <hr>
-      <div class="d-flex justify-content-between align-items-center">
-        <span>🔊 Sound</span>
-        <input type="checkbox" id="soundToggle" checked>
-      </div>
+    <div class="form-check form-switch mb-3">
+      <input class="form-check-input" type="checkbox" id="timerToggle" checked>
+      <label class="form-check-label">Enable Timer</label>
     </div>
 
-    <button class="start mt-4" onclick="playClick(); startGame()">START GAME</button>
-  </div>
+    <div class="form-check form-switch mb-4">
+      <input class="form-check-input" type="checkbox" id="soundToggle" checked>
+      <label class="form-check-label">Sound On</label>
+    </div>
 
+    <button class="btn btn-primary w-100 mb-2" onclick="startGame()">Start Game</button>
+    <button class="btn btn-outline-secondary w-100" onclick="history.back()">Back</button>
+  </div>
 </div>
 
 <script>
 const params = new URLSearchParams(location.search);
-const game = params.get('game');
+const gameKey = params.get('game');
 
-/* GAME MAP */
-const gameMap = {
-  sprint: 'games/sprint.html',
-  puzzle: 'games/puzzle.html',
-  logic: 'games/sprint.html'
+const gameConfig = {
+  sprint:{
+    title:'Sprint Quiz',
+    sub:'Answer fast before time runs out',
+    url:'games/sprint.html'
+  },
+  puzzle:{
+    title:'Puzzle Game',
+    sub:'Solve smart image puzzles',
+    url:'games/puzzle.html'
+  }
 };
 
-/* CLICK SOUND */
+// set UI
+document.getElementById('gameTitle').innerText = gameConfig[gameKey].title;
+document.getElementById('gameSub').innerText   = gameConfig[gameKey].sub;
+
+// click sound
 const clickSound = new Howl({
-  src: ['assets/sound/click.mp3'],
-  volume: 0.5,
-  html5: true
+  src:['assets/sound/click.mp3']
 });
 
-/* PLAY SOUND EVERY TIME */
-function playClick(){
-  if(!soundToggle.checked) return;
-
-  clickSound.stop();   // reset sound
-  clickSound.play();  // play again
-}
-
 function startGame(){
-  localStorage.setItem('timerOn', timerToggle.checked);
-  localStorage.setItem('soundOn', soundToggle.checked);
+  clickSound.play();
 
-  setTimeout(()=>{
-    location.href = gameMap[game];
-  }, 150); // sound finish delay
+  localStorage.setItem('timerOn',
+    document.getElementById('timerToggle').checked ? '1':'0'
+  );
+  localStorage.setItem('soundOn',
+    document.getElementById('soundToggle').checked ? '1':'0'
+  );
+
+  location.href = gameConfig[gameKey].url;
 }
 </script>
+
 </body>
 </html>
 
