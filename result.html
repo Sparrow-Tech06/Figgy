@@ -11,7 +11,7 @@
 <style>
 :root{
   --bg:#ffffff;
-  --card: none ;
+  --card:none;
   --text:#1e1f24;
   --muted:#6c757d;
   --border:#e6e8ef;
@@ -51,7 +51,6 @@ body{
   width:100%;
   max-width:420px;
   background:var(--card);
-  border: ;
   border-radius:var(--radius);
   padding:28px;
   text-align:center;
@@ -78,18 +77,17 @@ body{
   margin-bottom:26px;
 }
 
-/* BUTTON */
 .btn-outline{
   border:1px solid var(--border);
   padding:14px;
   border-radius:14px;
   font-weight:600;
-  background: var(--primary) ;
-  margin-top: 30px ;
-  color: #fff ;
+  background:var(--primary);
+  color:#fff;
+  margin-top:30px;
 }
 
-/* ===== PREMIUM CONFETTI ===== */
+/* ===== CONFETTI ===== */
 #confetti{
   position:fixed;
   inset:0;
@@ -124,7 +122,7 @@ body{
 
 <body>
 
-<!-- 🎉 CONFETTI LAYER -->
+<!-- CONFETTI -->
 <div id="confetti"></div>
 
 <div class="result-wrapper">
@@ -139,27 +137,28 @@ body{
   </div>
 </div>
 
+<script src="https://sparrow-tech06.github.io/Figgy/coin/get-coin.js"></script>
 <script>
-/* ===== DATA ===== */
-const score = Number(localStorage.getItem('lastScore') || 0);
-const total = Number(localStorage.getItem('lastTotal') || 0);
+/* ===== DATA (UNIVERSAL) ===== */
+const score    = Number(localStorage.getItem('lastScore') || 0);
+const total    = Number(localStorage.getItem('lastTotal') || 0);
 const gameName = localStorage.getItem('lastGame') || 'Game';
 
 /* ===== UI ===== */
 document.getElementById('gameName').innerText = gameName;
 document.getElementById('score').innerText = `${score} / ${total}`;
-const percent = total ? Math.round((score/total)*100) : 0;
+const percent = total ? Math.round((score / total) * 100) : 0;
 document.getElementById('percent').innerText = `${percent}% Accuracy`;
 
 /* ===== SOUND ===== */
-if(localStorage.getItem('soundOn') === '1'){
+if (localStorage.getItem('soundOn') === '1') {
   new Howl({
-    src:['assets/sound/correct.mp3'],
-    volume:.6
+    src: ['assets/sound/correct.mp3'],
+    volume: 0.6
   }).play();
 }
 
-/* ===== PREMIUM CONFETTI ===== */
+/* ===== CONFETTI ===== */
 (function premiumConfetti(){
   const wrap = document.getElementById('confetti');
   const colors = ['#4f46e5','#22c55e','#f59e0b','#ef4444','#06b6d4'];
@@ -169,30 +168,20 @@ if(localStorage.getItem('soundOn') === '1'){
     const el = document.createElement('div');
     el.className = 'confetti';
 
-    const size = Math.random()*6 + 6; // 6–12px
+    const size = Math.random()*6 + 6;
     const circle = Math.random() > 0.7;
 
-    el.style.width = size+'px';
+    el.style.width  = size+'px';
     el.style.height = circle ? size+'px' : size*1.4+'px';
     el.style.borderRadius = circle ? '50%' : '3px';
-    el.style.background =
-      colors[Math.floor(Math.random()*colors.length)];
-
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
     el.style.left = Math.random()*100+'vw';
 
-    /* ⏱️ INCREASED TIME */
-    const duration = 4000 + Math.random()*2000;  // 4-6 sec
-    const delay = Math.random()*400;
+    el.style.animationDuration = (4000 + Math.random()*2000) + 'ms';
+    el.style.animationDelay = (Math.random()*400) + 'ms';
 
-    el.style.animationDuration = duration+'ms';
-    el.style.animationDelay = delay+'ms';
-
-    el.style.setProperty('--drift',
-      (Math.random()*220 - 110)+'px'
-    );
-    el.style.setProperty('--rotate',
-      (Math.random()*900 - 450)+'deg'
-    );
+    el.style.setProperty('--drift', (Math.random()*220 - 110)+'px');
+    el.style.setProperty('--rotate', (Math.random()*900 - 450)+'deg');
 
     wrap.appendChild(el);
   }
@@ -200,15 +189,20 @@ if(localStorage.getItem('soundOn') === '1'){
   setTimeout(()=>wrap.remove(), 6500);
 })();
 
+/* ===== COIN REWARD (DYNAMIC GAME NAME) ===== */
+if (typeof getCoin === "function") {
+  getCoin(10, gameName);
+}
+
 /* ===== BACK NAVIGATION ===== */
 function goBack(){
   window.history.back();
 }
 
-/* 🔒 RESULT PAGE SHOULD NOT TRAP USER */
+/* Prevent trap */
 history.pushState(null,'',location.href);
 window.onpopstate = () => window.history.back();
-</script>
+    </script>
 
 </body>
 </html>
