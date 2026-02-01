@@ -137,20 +137,19 @@ body{
   </div>
 </div>
 
-<script src="https://sparrow-tech06.github.io/Figgy/coin/get-coin.js"></script>
 <script>
-/* ===== DATA (UNIVERSAL) ===== */
+/* ================= DATA ================= */
 const score    = Number(localStorage.getItem('lastScore') || 0);
 const total    = Number(localStorage.getItem('lastTotal') || 0);
 const gameName = localStorage.getItem('lastGame') || 'Game';
 
-/* ===== UI ===== */
+/* ================= UI ================= */
 document.getElementById('gameName').innerText = gameName;
 document.getElementById('score').innerText = `${score} / ${total}`;
 const percent = total ? Math.round((score / total) * 100) : 0;
 document.getElementById('percent').innerText = `${percent}% Accuracy`;
 
-/* ===== SOUND ===== */
+/* ================= SOUND ================= */
 if (localStorage.getItem('soundOn') === '1') {
   new Howl({
     src: ['assets/sound/correct.mp3'],
@@ -158,51 +157,57 @@ if (localStorage.getItem('soundOn') === '1') {
   }).play();
 }
 
-/* ===== CONFETTI ===== */
-(function premiumConfetti(){
+/* ================= CONFETTI ================= */
+(function confetti(){
   const wrap = document.getElementById('confetti');
   const colors = ['#4f46e5','#22c55e','#f59e0b','#ef4444','#06b6d4'];
-  const pieces = 150;
-
-  for(let i=0;i<pieces;i++){
+  for(let i=0;i<150;i++){
     const el = document.createElement('div');
     el.className = 'confetti';
 
     const size = Math.random()*6 + 6;
-    const circle = Math.random() > 0.7;
-
-    el.style.width  = size+'px';
-    el.style.height = circle ? size+'px' : size*1.4+'px';
-    el.style.borderRadius = circle ? '50%' : '3px';
+    el.style.width = size+'px';
+    el.style.height = (Math.random()>0.7?size:size*1.4)+'px';
+    el.style.borderRadius = Math.random()>0.7?'50%':'3px';
     el.style.background = colors[Math.floor(Math.random()*colors.length)];
     el.style.left = Math.random()*100+'vw';
-
-    el.style.animationDuration = (4000 + Math.random()*2000) + 'ms';
-    el.style.animationDelay = (Math.random()*400) + 'ms';
-
-    el.style.setProperty('--drift', (Math.random()*220 - 110)+'px');
-    el.style.setProperty('--rotate', (Math.random()*900 - 450)+'deg');
-
+    el.style.animationDuration = (4000+Math.random()*2000)+'ms';
+    el.style.animationDelay = (Math.random()*400)+'ms';
+    el.style.setProperty('--drift',(Math.random()*220-110)+'px');
+    el.style.setProperty('--rotate',(Math.random()*900-450)+'deg');
     wrap.appendChild(el);
   }
-
-  setTimeout(()=>wrap.remove(), 6500);
+  setTimeout(()=>wrap.remove(),6500);
 })();
 
-/* ===== COIN REWARD (DYNAMIC GAME NAME) ===== */
-if (typeof getCoin === "function") {
-  getCoin(10, gameName);
-}
+/* ================= ONE-TIME REWARD ================= */
+(function rewardOnce(){
 
-/* ===== BACK NAVIGATION ===== */
+  const rewardKey = localStorage.getItem('rewardKey');
+  if (!rewardKey) return;
+
+  const lockKey = 'rewarded_' + rewardKey;
+
+  // already rewarded → stop
+  if (localStorage.getItem(lockKey) === '1') return;
+
+  // give reward
+  if (typeof getCoin === "function") {
+    getCoin(10, gameName);
+  }
+
+  // lock reward
+  localStorage.setItem(lockKey, '1');
+
+})();
+
+/* ================= NAVIGATION ================= */
 function goBack(){
   window.history.back();
 }
-
-/* Prevent trap */
 history.pushState(null,'',location.href);
 window.onpopstate = () => window.history.back();
-    </script>
+</script>
 
 </body>
 </html>
