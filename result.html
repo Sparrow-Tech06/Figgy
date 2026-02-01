@@ -179,23 +179,24 @@ if(localStorage.getItem('soundOn') === '1'){
 
     el.style.left = Math.random()*100+'vw';
 
-    const duration = 2200 + Math.random()*1600;
-    const delay = Math.random()*300;
+    /* ⏱️ INCREASED TIME */
+    const duration = 4000 + Math.random()*2000;  // 4-6 sec
+    const delay = Math.random()*400;
 
     el.style.animationDuration = duration+'ms';
     el.style.animationDelay = delay+'ms';
 
     el.style.setProperty('--drift',
-      (Math.random()*200 - 100)+'px'
+      (Math.random()*220 - 110)+'px'
     );
     el.style.setProperty('--rotate',
-      (Math.random()*720 - 360)+'deg'
+      (Math.random()*900 - 450)+'deg'
     );
 
     wrap.appendChild(el);
   }
 
-  setTimeout(()=>wrap.remove(), 4500);
+  setTimeout(()=>wrap.remove(), 6500);
 })();
 
 /* ===== BACK NAVIGATION ===== */
