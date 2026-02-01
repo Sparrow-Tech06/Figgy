@@ -76,7 +76,9 @@ document.getElementById('gameSub').innerText   = gameConfig[gameKey].sub;
 
 // click sound
 const clickSound = new Howl({
-  src:['assets/sound/click.mp3']
+  src:['assets/sound/click.mp3'], 
+  volume: 0.5,
+  html5: true
 });
 
 function startGame(){
