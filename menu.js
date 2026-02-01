@@ -67,8 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
     .menuHeader button, .menuHeader a{
       font-size:16px;
       font-weight:600;
-      background:none;
-      border:none;
+      background: var(--card) ;
+      border: 1px solid var(--border) ;
       text-decoration:none;
       color:#4f46e5;
       cursor:pointer;
