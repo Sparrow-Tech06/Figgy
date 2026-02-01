@@ -143,6 +143,15 @@ function goMenu(){
   }
   location.href = `menu.html?game=${gameKey}`;
 }
+
+// 🔒 RESULT PAGE SHOULD NEVER GO BACK
+history.pushState(null, '', location.href);
+
+window.onpopstate = function () {
+  const gameKey = localStorage.getItem('currentGame');
+  location.replace(`menu.html?game=${gameKey}`);
+};
+  
 </script>
 
 </body>
