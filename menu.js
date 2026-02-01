@@ -72,6 +72,8 @@ document.addEventListener("DOMContentLoaded", () => {
       text-decoration:none;
       color:#4f46e5;
       cursor:pointer;
+      border-radius: 16px ;
+      padding: 4px 6px ;
     }
 
     .menuBody{
