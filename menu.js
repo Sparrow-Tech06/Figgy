@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     #menuOverlay{
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,.6);
+      background: #fff ;
       display:flex;
       justify-content:center;
       align-items:center;
