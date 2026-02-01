@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sprint Quiz</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  background:#ffffff;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+}
+.game{
+  max-width:520px;
+  margin:auto;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  padding:16px;
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  font-weight:600;
+  margin-bottom:12px;
+}
+.card{
+  flex:1;
+  border:1px solid #e6e8ef;
+  border-radius:16px;
+  padding:20px;
+}
+.q{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:18px;
+}
+.opt{
+  border:1px solid #e6e8ef;
+  border-radius:14px;
+  padding:14px;
+  text-align:center;
+  margin-bottom:12px;
+  cursor:pointer;
+  transition:.2s;
+}
+.opt:hover{
+  background:#f7f8fa;
+}
+.submit{
+  margin-top:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+  <div class="top">
+    <span id="timerBox"></span>
+    <span>Score: <b id="score">0</b></span>
+  </div>
+
+  <div class="card">
+    <div class="q" id="question"></div>
+    <div id="options"></div>
+
+    <!-- ONLY for NO TIMER -->
+    <button id="submitBtn"
+      class="btn btn-outline-primary w-100 submit"
+      onclick="endGame()"
+      style="display:none">
+      Submit & Finish
+    </button>
+  </div>
+
+</div>
+
+<!-- ✅ UNIVERSAL MENU -->
+<script src="../menu.js"></script>
+
+<script>
+/* ===== SETTINGS FROM MENU ===== */
+const timerOn = localStorage.getItem('timerOn') === '1';
+const soundOn = localStorage.getItem('soundOn') === '1';
+
+/* ===== SOUNDS ===== */
+const click   = new Howl({ src:['../assets/sound/click.mp3'], volume:.5 });
+const correct = new Howl({ src:['../assets/sound/correct.mp3'], volume:.6 });
+const wrong   = new Howl({ src:['../assets/sound/wrong.mp3'], volume:.6 });
+
+/* ===== GAME STATE ===== */
+let time = 30;
+let score = 0;
+let index = 0;
+const total = 10;
+let timerRef = null;
+let gameEnded = false;
+
+/* ===== TIMER ===== */
+if(timerOn){
+  timerBox.innerText = `⏱ ${time}s`;
+  timerRef = setInterval(()=>{
+    time--;
+    timerBox.innerText = `⏱ ${time}s`;
+    if(time <= 0){
+      endGame();
+    }
+  },1000);
+}else{
+  timerBox.innerText = 'No Timer';
+  submitBtn.style.display = 'block';
+}
+
+/* ===== QUESTIONS ===== */
+function nextQuestion(){
+
+  if(gameEnded) return;
+
+  if(index === total){
+    endGame();
+    return;
+  }
+
+  index++;
+
+  const a = Math.floor(Math.random()*10);
+  const b = Math.floor(Math.random()*10);
+  const ans = a + b;
+
+  question.innerText = `${a} + ${b} = ?`;
+  options.innerHTML = '';
+
+  const correctPos = Math.floor(Math.random()*4);
+
+  for(let i=0;i<4;i++){
+    const val = i === correctPos
+      ? ans
+      : ans + Math.floor(Math.random()*5) + 1;
+
+    const div = document.createElement('div');
+    div.className = 'opt';
+    div.innerText = val;
+
+    div.onclick = () => {
+      if(gameEnded) return;
+
+      if(soundOn) click.play();
+
+      if(val === ans){
+        score++;
+        scoreEl.innerText = score;
+        if(soundOn) correct.play();
+      }else{
+        if(soundOn) wrong.play();
+      }
+      nextQuestion();
+    };
+
+    options.appendChild(div);
+  }
+}
+
+/* ===== END GAME ===== */
+function endGame(){
+  if(gameEnded) return;
+  gameEnded = true;
+
+  clearInterval(timerRef);
+
+  localStorage.setItem('lastGame','Sprint Quiz');
+  localStorage.setItem('lastScore',score);
+  localStorage.setItem('lastTotal',total);
+  localStorage.setItem('currentGame','sprint');
+
+  location.replace('../result.html');
+}
+
+/* ===== INIT ===== */
+const scoreEl = document.getElementById('score');
+nextQuestion();
+</script>
+
+</body>
+</html>
