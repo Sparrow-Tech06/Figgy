@@ -1,4 +1,3 @@
-// menu.js
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(location.search);
   const gameKey = params.get("game") || "default";
@@ -9,6 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const html = `
   <div id="menuOverlay">
     <div class="menuBox">
+      <div class="menuHeader" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <button id="backHome" style="background:none;border:none;font-weight:600;cursor:pointer;">⬅ Home</button>
+        <a href="../how-to-play.html" style="text-decoration:none;font-weight:600;">❓ How to Play</a>
+      </div>
+
       <h1>${title}</h1>
       <p>${subtitle}</p>
 
@@ -39,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
       justify-content:center;
       align-items:center;
       z-index:9999;
-      animation:fade .3s ease;
+      animation:fade .2s ease;
     }
     .menuBox{
       background:#fff;
@@ -78,6 +82,11 @@ document.addEventListener("DOMContentLoaded", () => {
       border-radius:12px;
       font-weight:600;
       font-size:16px;
+      cursor:pointer;
+    }
+    #backHome{
+      font-size:14px;
+      color:#4f46e5;
     }
     @keyframes fade{
       from{opacity:0;transform:translateY(10px)}
@@ -96,18 +105,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if(prevTimer !== null) mTimer.checked = prevTimer === '1';
   if(prevSound !== null) mSound.checked = prevSound === '1';
 
-  // Sound effect only if checkbox enabled
+  // Menu sound effect only if enabled
   let clickSound = null;
-  if(mSound.checked){
-    clickSound = new Howl({
-      src:[`../assets/sound/${gameKey}.mp3`],
-      loop:true,
-      volume:1
-    });
-    clickSound.play();
-  }
-
-  mSound.addEventListener("change",()=>{
+  const initSound = () => {
     if(clickSound){
       clickSound.stop();
       clickSound = null;
@@ -120,19 +120,25 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       clickSound.play();
     }
-  });
+  };
+  initSound();
+
+  mSound.addEventListener("change", initSound);
+
+  // Back to Home
+  document.getElementById("backHome").onclick = ()=> window.history.back();
 
   // Start button
   const mStart = document.getElementById("mStart");
   mStart.onclick = ()=>{
-    // Save settings
+    // Save settings immediately
     localStorage.setItem('timerOn', mTimer.checked ? '1':'0');
     localStorage.setItem('soundOn', mSound.checked ? '1':'0');
 
-    // Remove menu
+    // Remove overlay
     document.getElementById("menuOverlay").remove();
 
-    // Stop menu music
+    // Stop menu sound immediately
     if(clickSound) clickSound.stop();
   };
 });
