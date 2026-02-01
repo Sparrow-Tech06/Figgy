@@ -27,7 +27,6 @@
     --border:#2f3750;
   }
 }
-
 body{
   margin:0;
   min-height:100vh;
@@ -35,48 +34,27 @@ body{
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
 }
-
-/* ===== FULL VIEWPORT ===== */
 .result-wrapper{
   min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:20px;
-  position:relative;
 }
-
-/* ===== RESULT CARD ===== */
 .result-card{
   width:100%;
   max-width:420px;
-  background:var(--card);
-  border-radius:var(--radius);
   padding:28px;
   text-align:center;
-  z-index:2;
   animation:fade .35s ease;
 }
-
 @keyframes fade{
   from{opacity:0;transform:translateY(14px)}
   to{opacity:1}
 }
-
-.game-name{
-  font-size:14px;
-  color:var(--muted);
-}
-.score{
-  font-size:48px;
-  font-weight:800;
-  margin:14px 0 6px;
-}
-.percent{
-  color:var(--muted);
-  margin-bottom:26px;
-}
-
+.game-name{font-size:14px;color:var(--muted)}
+.score{font-size:48px;font-weight:800;margin:14px 0 6px}
+.percent{color:var(--muted);margin-bottom:26px}
 .btn-outline{
   border:1px solid var(--border);
   padding:14px;
@@ -87,33 +65,16 @@ body{
   margin-top:30px;
 }
 
-/* ===== CONFETTI ===== */
-#confetti{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  pointer-events:none;
-  overflow:hidden;
-}
-
+/* CONFETTI */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:9999}
 .confetti{
   position:absolute;
   top:-12px;
-  opacity:.9;
-  animation-name:confetti-fall;
-  animation-timing-function:cubic-bezier(.23,.61,.35,1);
-  animation-fill-mode:forwards;
+  animation:fall cubic-bezier(.23,.61,.35,1) forwards;
 }
-
-@keyframes confetti-fall{
-  0%{
-    transform:translate3d(0,0,0) rotate(0deg);
-    opacity:1;
-  }
-  100%{
-    transform:
-      translate3d(var(--drift),110vh,0)
-      rotate(var(--rotate));
+@keyframes fall{
+  to{
+    transform:translateY(110vh) rotate(720deg);
     opacity:0;
   }
 }
@@ -122,7 +83,6 @@ body{
 
 <body>
 
-<!-- CONFETTI -->
 <div id="confetti"></div>
 
 <div class="result-wrapper">
@@ -131,82 +91,76 @@ body{
     <div class="score" id="score">0 / 0</div>
     <div class="percent" id="percent">0%</div>
 
-    <button class="btn btn-outline w-100" onclick="goBack()">
-      Back to Menu
-    </button>
+    <button class="btn btn-outline w-100" onclick="goBack()">Back to Menu</button>
   </div>
 </div>
 
 <script>
-/* ================= DATA ================= */
+/* ========= DATA ========= */
 const score    = Number(localStorage.getItem('lastScore') || 0);
 const total    = Number(localStorage.getItem('lastTotal') || 0);
 const gameName = localStorage.getItem('lastGame') || 'Game';
 
-/* ================= UI ================= */
+/* ========= UI ========= */
 document.getElementById('gameName').innerText = gameName;
 document.getElementById('score').innerText = `${score} / ${total}`;
-const percent = total ? Math.round((score / total) * 100) : 0;
+const percent = total ? Math.round((score/total)*100) : 0;
 document.getElementById('percent').innerText = `${percent}% Accuracy`;
 
-/* ================= SOUND ================= */
-if (localStorage.getItem('soundOn') === '1') {
+/* ========= SOUND ========= */
+if(localStorage.getItem('soundOn') === '1'){
   new Howl({
-    src: ['assets/sound/correct.mp3'],
-    volume: 0.6
+    src:['assets/sound/correct.mp3'],
+    volume:.6
   }).play();
 }
 
-/* ================= CONFETTI ================= */
-(function confetti(){
-  const wrap = document.getElementById('confetti');
-  const colors = ['#4f46e5','#22c55e','#f59e0b','#ef4444','#06b6d4'];
-  for(let i=0;i<150;i++){
-    const el = document.createElement('div');
-    el.className = 'confetti';
-
-    const size = Math.random()*6 + 6;
-    el.style.width = size+'px';
-    el.style.height = (Math.random()>0.7?size:size*1.4)+'px';
-    el.style.borderRadius = Math.random()>0.7?'50%':'3px';
-    el.style.background = colors[Math.floor(Math.random()*colors.length)];
-    el.style.left = Math.random()*100+'vw';
-    el.style.animationDuration = (4000+Math.random()*2000)+'ms';
-    el.style.animationDelay = (Math.random()*400)+'ms';
-    el.style.setProperty('--drift',(Math.random()*220-110)+'px');
-    el.style.setProperty('--rotate',(Math.random()*900-450)+'deg');
-    wrap.appendChild(el);
+/* ========= CONFETTI ========= */
+(function(){
+  const wrap=document.getElementById('confetti');
+  for(let i=0;i<120;i++){
+    const d=document.createElement('div');
+    d.className='confetti';
+    d.style.left=Math.random()*100+'vw';
+    d.style.width=d.style.height=(6+Math.random()*6)+'px';
+    d.style.background=['#4f46e5','#22c55e','#f59e0b','#ef4444'][i%4];
+    d.style.animationDuration=(4+Math.random()*2)+'s';
+    wrap.appendChild(d);
   }
   setTimeout(()=>wrap.remove(),6500);
 })();
 
-/* ================= ONE-TIME REWARD ================= */
+/* ========= ONE-TIME REWARD (RESULT PAGE ONLY) ========= */
 (function rewardOnce(){
 
-  const rewardKey = localStorage.getItem('rewardKey');
-  if (!rewardKey) return;
+  // create or reuse session key
+  let sessionKey = sessionStorage.getItem('resultRewardKey');
 
-  const lockKey = 'rewarded_' + rewardKey;
+  if(!sessionKey){
+    sessionKey = 'res_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    sessionStorage.setItem('resultRewardKey', sessionKey);
+  }
 
-  // already rewarded → stop
-  if (localStorage.getItem(lockKey) === '1') return;
+  const lockKey = 'rewarded_' + sessionKey;
+
+  // already rewarded
+  if(localStorage.getItem(lockKey)==='1') return;
 
   // give reward
-  if (typeof getCoin === "function") {
+  if(typeof getCoin === 'function'){
     getCoin(10, gameName);
   }
 
-  // lock reward
-  localStorage.setItem(lockKey, '1');
+  // lock permanently
+  localStorage.setItem(lockKey,'1');
 
 })();
 
-/* ================= NAVIGATION ================= */
+/* ========= NAV ========= */
 function goBack(){
-  window.history.back();
+  sessionStorage.removeItem('resultRewardKey'); // reset for next game
+  history.back();
 }
-history.pushState(null,'',location.href);
-window.onpopstate = () => window.history.back();
 </script>
 
 </body>
