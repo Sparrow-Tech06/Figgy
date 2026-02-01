@@ -1,98 +1,90 @@
 // menu.js (ROOT)
-
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ---------- Read game data from URL ----------
-  const params = new URLSearchParams(window.location.search);
+  // ---------- URL Data ----------
+  const params = new URLSearchParams(location.search);
+  const gameKey = params.get("game") || "default";
+  const title = params.get("title") || "Game";
+  const subtitle = params.get("subtitle") || "";
 
-  const gameKey   = params.get("game") || "default";
-  const gameTitle = params.get("title") || "Game";
-  const subtitle  = params.get("subtitle") || "Have Fun";
-
-  // ---------- Inject Overlay Menu ----------
-  const menuHTML = `
-    <div id="gameMenuOverlay">
-      <div class="menu-box">
-        <h4>${gameTitle}</h4>
+  // ---------- Inject Menu ----------
+  document.body.insertAdjacentHTML("beforeend", `
+    <div id="menuOverlay">
+      <div class="menuBox">
+        <h3>${title}</h3>
         <p>${subtitle}</p>
+        <div id="timer">00:00</div>
 
-        <div class="timer" id="gameTimer">00:00</div>
-
-        <div class="menu-actions">
-          <button id="soundToggle">🔊 Sound</button>
-          <button onclick="goHome()">🏠 Home</button>
-          <button onclick="restartGame()">🔄 Restart</button>
-        </div>
+        <button onclick="toggleSound()" id="soundBtn">🔊 Sound</button>
+        <button onclick="restartGame()">🔄 Restart</button>
+        <button onclick="goHome()">🏠 Home</button>
       </div>
     </div>
-  `;
-  document.body.insertAdjacentHTML("beforeend", menuHTML);
 
-  // ---------- Styles ----------
+    <button id="menuBtn" onclick="openMenu()">☰</button>
+  `);
+
+  // ---------- Style ----------
   const style = document.createElement("style");
   style.innerHTML = `
-    #gameMenuOverlay{
+    #menuBtn{
+      position:fixed;
+      top:10px;
+      right:10px;
+      z-index:999;
+      padding:8px 12px;
+    }
+    #menuOverlay{
       position:fixed;
       inset:0;
       background:rgba(0,0,0,.6);
       display:none;
-      justify-content:center;
       align-items:center;
-      z-index:9999;
+      justify-content:center;
+      z-index:1000;
     }
-    .menu-box{
+    .menuBox{
       background:#fff;
       padding:20px;
       border-radius:12px;
-      width:85%;
-      max-width:320px;
       text-align:center;
+      width:85%;
+      max-width:300px;
     }
-    .timer{
+    #timer{
       font-size:24px;
       margin:10px 0;
-    }
-    .menu-actions button{
-      margin:5px;
-      padding:8px 12px;
     }
   `;
   document.head.appendChild(style);
 
-  // ---------- Howler Sound ----------
-  const clickSound = new Howl({
-    src: [`../assets/sound/${gameKey}.mp3`],
-    volume: 1
+  // ---------- Howler ----------
+  window.gameSound = new Howl({
+    src:[`../assets/sound/${gameKey}.mp3`],
+    volume:1
   });
 
   let soundOn = true;
 
-  document.getElementById("soundToggle").onclick = () => {
+  window.toggleSound = () => {
     soundOn = !soundOn;
-    clickSound.mute(!soundOn);
-    document.getElementById("soundToggle").innerText =
+    gameSound.mute(!soundOn);
+    document.getElementById("soundBtn").innerText =
       soundOn ? "🔊 Sound" : "🔇 Muted";
   };
 
   // ---------- Timer ----------
   let sec = 0;
-  setInterval(() => {
+  setInterval(()=>{
     sec++;
-    document.getElementById("gameTimer").innerText =
+    timer.innerText =
       String(Math.floor(sec/60)).padStart(2,"0") + ":" +
       String(sec%60).padStart(2,"0");
-  }, 1000);
+  },1000);
 
-  // ---------- Global functions ----------
-  window.openMenu = () => {
-    document.getElementById("gameMenuOverlay").style.display = "flex";
-  };
+  // ---------- Global ----------
+  window.openMenu = () => menuOverlay.style.display="flex";
+  window.goHome = () => location.href="../index.html";
+  window.restartGame = () => location.reload();
 
-  window.goHome = () => {
-    location.href = "../index.html";
-  };
-
-  window.restartGame = () => {
-    location.reload();
-  };
 });
