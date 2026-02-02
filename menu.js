@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
   <div id="menuOverlay">
     <div class="menuContent">
       <div class="menuHeader">
-        <button id="backHome">⬅ Home</button>
-        <a href="../how-to-play.html">❓ How to Play</a>
+        <button id="backHome"> <i class="bi bi-box-arrow-right"></i> Exit </button>
+        <a href="../how-to-play.html"> How to Play</a>
       </div>
 
       <div class="menuBody">
@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     @keyframes fade{
-      from{opacity:0;transform:translateY(10px)}
+      from{opacity:0.6;transform:translateY(10px)}
       to{opacity:1}
     }
   `;
