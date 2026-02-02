@@ -80,13 +80,13 @@ document.addEventListener("DOMContentLoaded", () => {
       flex:1;
       display:flex;
       flex-direction:column;
-      justify-content:center;
+      justify-content:space-around;
       align-items:center;
       gap:16px;
     }
 
     .menuBody h1{
-      font-size:28px;
+      font-size:30px;
       margin:0;
     }
 
