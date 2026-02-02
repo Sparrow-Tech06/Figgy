@@ -18,6 +18,8 @@
   --border:#e3e6ea;
   --icon: #000 ;
   --coin: #9b8cff;
+  --sk-base: #e6e8eb;
+  --sk-mid:  #f2f3f5;
 }
 
  @media (prefers-color-scheme: dark) {
@@ -29,6 +31,8 @@
   --border:#2f3750;
   --icon: #fff;
   --coin: #9b8cff ;
+  --sk-base: #1f2430;
+  --sk-mid:  #2a3140;
 }
  }
 
@@ -109,7 +113,7 @@ main{
 
 /* Skeleton */
 .skeleton{
-  background:linear-gradient(90deg,#1a1d23,#232734,#1a1d23);
+  background: linear-gradient( 90deg, var(--sk-base) 25%, var(--sk-mid) 37%, var(--sk-base) 63% );
   background-size:200% 100%;
   animation:skeleton 1.2s infinite;
   border-radius:14px;
