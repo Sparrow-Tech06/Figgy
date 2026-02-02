@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
       flex:1;
       display:flex;
       flex-direction:column;
-      justify-content:space-around;
+      justify-content:space-evenly;
       align-items:center;
       gap:16px;
     }
