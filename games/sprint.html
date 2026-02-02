@@ -9,15 +9,15 @@
 <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
 
 <style>
-:root {
-   --bg: #ffffff ;
-   --card : #f7f8fa ;
-   --border:#e3e6ea ;
+:root{
+  --bg:#ffffff;
+  --card:#f7f8fa;
+  --border:#e3e6ea;
 }
 body{
   margin:0;
-  background: var(--bg) ;
-  font-family:'Segoe UI',Roboto,system-ui,-apple-system;
+  background:var(--bg);
+  font-family:'Segoe UI',Roboto,system-ui;
 }
 .game{
   max-width:520px;
@@ -35,7 +35,7 @@ body{
 }
 .card{
   flex:1;
-  border:1px solid #e6e8ef;
+  border:1px solid var(--border);
   border-radius:16px;
   padding:20px;
 }
@@ -45,16 +45,15 @@ body{
   margin-bottom:18px;
 }
 .opt{
-  border:1px solid #e6e8ef;
+  border:1px solid var(--border);
   border-radius:14px;
   padding:14px;
   text-align:center;
   margin-bottom:12px;
   cursor:pointer;
-  transition:.2s;
 }
 .opt:hover{
-  background:#f7f8fa;
+  background:#f1f3f6;
 }
 .submit{
   margin-top:14px;
@@ -75,7 +74,6 @@ body{
     <div class="q" id="question"></div>
     <div id="options"></div>
 
-    <!-- ONLY for NO TIMER -->
     <button id="submitBtn"
       class="btn btn-outline-primary w-100 submit"
       onclick="endGame()"
@@ -86,11 +84,10 @@ body{
 
 </div>
 
-<!-- ✅ UNIVERSAL MENU -->
 <script src="../menu.js"></script>
 
 <script>
-/* ===== SETTINGS FROM MENU ===== */
+/* ===== SETTINGS ===== */
 const timerOn = localStorage.getItem('timerOn') === '1';
 const soundOn = localStorage.getItem('soundOn') === '1';
 
@@ -99,7 +96,7 @@ const click   = new Howl({ src:['../assets/sound/click.mp3'], volume:.5 });
 const correct = new Howl({ src:['../assets/sound/correct.mp3'], volume:.6 });
 const wrong   = new Howl({ src:['../assets/sound/wrong.mp3'], volume:.6 });
 
-/* ===== GAME STATE ===== */
+/* ===== STATE ===== */
 let time = 30;
 let score = 0;
 let index = 0;
@@ -119,9 +116,7 @@ if(timerOn){
   timerRef = setInterval(()=>{
     time--;
     timerBox.innerText = `⏱ ${time}s`;
-    if(time <= 0){
-      endGame();
-    }
+    if(time <= 0) endGame();
   },1000);
 }else{
   timerBox.innerText = 'No Timer';
@@ -130,16 +125,10 @@ if(timerOn){
 
 /* ===== QUESTIONS ===== */
 function nextQuestion(){
-
   if(gameEnded) return;
-
-  if(index === total){
-    endGame();
-    return;
-  }
+  if(index === total){ endGame(); return; }
 
   index++;
-
   const a = Math.floor(Math.random()*10);
   const b = Math.floor(Math.random()*10);
   const ans = a + b;
@@ -150,17 +139,13 @@ function nextQuestion(){
   const correctPos = Math.floor(Math.random()*4);
 
   for(let i=0;i<4;i++){
-    const val = i === correctPos
-      ? ans
-      : ans + Math.floor(Math.random()*5) + 1;
-
+    const val = i === correctPos ? ans : ans + Math.floor(Math.random()*5) + 1;
     const div = document.createElement('div');
     div.className = 'opt';
     div.innerText = val;
 
-    div.onclick = () => {
+    div.onclick = ()=>{
       if(gameEnded) return;
-
       if(soundOn) click.play();
 
       if(val === ans){
@@ -172,7 +157,6 @@ function nextQuestion(){
       }
       nextQuestion();
     };
-
     options.appendChild(div);
   }
 }
@@ -181,8 +165,10 @@ function nextQuestion(){
 function endGame(){
   if(gameEnded) return;
   gameEnded = true;
-
   clearInterval(timerRef);
+
+  // 🔐 UNIQUE REWARD SESSION
+  localStorage.setItem('rewardKey', Date.now().toString());
 
   localStorage.setItem('lastGame','Sprint Quiz');
   localStorage.setItem('lastScore',score);
@@ -192,9 +178,9 @@ function endGame(){
   location.replace('../result.html');
 }
 
-/* ===== INIT ===== */
 nextQuestion();
 </script>
 
 </body>
 </html>
+
