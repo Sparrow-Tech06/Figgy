@@ -114,16 +114,21 @@ main{
 /* Skeleton */
 .skeleton{
   background: linear-gradient( 90deg, var(--sk-base) 25%, var(--sk-mid) 37%, var(--sk-base) 63% );
-  background-size:200% 100%;
-  animation:skeleton 1.2s infinite;
+  background-size: 400% 100%;
+  animation: skeleton-loading var(--sk-speed) ease-in-out infinite;
   border-radius:14px;
   height:58px;
   margin-bottom:10px;
 }
 
-@keyframes skeleton{
-  0%{background-position:0%}
-  100%{background-position:200%}
+/* Animation */
+@keyframes skeleton-loading{
+  0%{
+    background-position: 100% 0;
+  }
+  100%{
+    background-position: 0 0;
+  }
 }
 
 /* Empty */
